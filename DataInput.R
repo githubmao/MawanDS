@@ -7,21 +7,21 @@
 #------------------------------------------------------------------------------#
 
 
-# 调用RFunctions.R
+# 调用RFunctions.R----
 source(file = "E:/R/MaWan/MawanDS/RFunctions.R", encoding = "utf-8")
 
 
-# 调用R Packages
+# 调用R Packages----
 library(data.table)
 
 
-# 设置数据所在文件夹路径为工作目录
+# 设置数据所在文件夹路径为工作目录----
 setwd(dir = "E:/R/MaWan/MawanDS/Data")  # 工作目录
 kFileList <- list.files(pattern = "*.csv")  # 数据文件名
 kDataName <- gsub(".csv", "", kFileList)  # 单个数据集名
 df.dsdata <- data.frame()  # 创建用于存放所有数据的数据框
 
-# 数据导入
+# 数据导入----
 for (kFileIndex in 1:length(kFileList)) {
   
   tmpdf.file2data <- fread(input = kFileList[kFileIndex],
@@ -54,7 +54,7 @@ for (kFileIndex in 1:length(kFileList)) {
 options(scipen = 200)
 
 
-# 数据类型转换
+# 数据类型转换----
 df.dsdata$speedXMS <- as.numeric(df.dsdata$speedXMS)
 df.dsdata$speedYMS <- as.numeric(df.dsdata$speedYMS)
 df.dsdata$speedZMS <- as.numeric(df.dsdata$speedZMS)
