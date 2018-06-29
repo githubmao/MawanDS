@@ -39,12 +39,21 @@ df.mainrightWTtruck <- subset(x = df.mainrightWT,
 # 1.1.1 轿车----
 plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
                                aes(x = disFromRoadStart, y = speedKMH)) +
-  geom_line(aes(colour = factor(driverID)), size = 1)
+  geom_line(aes(colour = factor(driverID)), size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9027),
+                     breaks = seq(959.9, 9027, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 120)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = 0, ymax = 120, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 120, label = "主线隧道洞口") +
+  annotate(geom = "text", x = )
 
 plot.MRWOTsedanspeed
 
 
-unique(df.dsdata$dsScen)
+max(df.mainright$disFromRoadStart)
 
 
 
