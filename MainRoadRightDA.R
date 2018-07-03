@@ -35,7 +35,7 @@ df.mainrightWTtruck <- subset(x = df.mainrightWT,
 
 
 # 1 右线，行驶速度----
-# 1.1 轿车，速度----
+# 1.1 轿车，行驶速度----
 plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
                                aes(x = disFromRoadStart, y = speedKMH)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
@@ -57,7 +57,7 @@ plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
 plot.MRWOTsedanspeed
 
 
-# 1.2 货车，速度----
+# 1.2 货车，行驶速度----
 plot.MRWOTtruckspeed <- ggplot(data = df.mainrightWOTtruck,
                                aes(x = disFromRoadStart, y = speedKMH)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
