@@ -34,9 +34,8 @@ df.mainrightWTtruck <- subset(x = df.mainrightWT,
                               dsVehicleType == "Truck")  # 右线货车，有交通流
 
 
-# 1 右线行驶速度----
-# 1.1 右线，行驶速度分析----
-# 1.1.1 轿车，速度----
+# 1 右线，行驶速度----
+# 1.1 轿车，速度----
 plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
                                aes(x = disFromRoadStart, y = speedKMH)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
@@ -58,7 +57,7 @@ plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
 plot.MRWOTsedanspeed
 
 
-# 1.1.2 货车，速度----
+# 1.2 货车，速度----
 plot.MRWOTtruckspeed <- ggplot(data = df.mainrightWOTtruck,
                                aes(x = disFromRoadStart, y = speedKMH)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
@@ -80,8 +79,8 @@ plot.MRWOTtruckspeed <- ggplot(data = df.mainrightWOTtruck,
 plot.MRWOTtruckspeed
 
 
-# 1.2 右线，加速度分析----
-# 1.2.1 轿车，加速度----
+# 2 右线，加速度分析----
+# 2.1 轿车，加速度----
 plot.MRWOTsedanacc <- ggplot(data = df.mainrightWOTsedan,
                              aes(x = disFromRoadStart, y = accZMS2)) +
   geom_point(aes(colour = factor(driverID)), size =1) +
@@ -107,7 +106,7 @@ plot.MRWOTsedanacc <- ggplot(data = df.mainrightWOTsedan,
 plot.MRWOTsedanacc
 
 
-# 1.2.2 货车，加速度----
+# 2.2 货车，加速度----
 plot.MRWOTtruckacc <- ggplot(data = df.mainrightWOTtruck,
                              aes(x = disFromRoadStart, y = accZMS2)) +
   geom_point(aes(colour = factor(driverID)), size =1) +
@@ -133,8 +132,8 @@ plot.MRWOTtruckacc <- ggplot(data = df.mainrightWOTtruck,
 plot.MRWOTtruckacc
 
 
-# 1.3 右线，制动踏板位移分析----
-# 1.3.1 轿车，制动踏板位移----
+# 3 右线，制动踏板位移分析----
+# 3.1 轿车，制动踏板位移----
 plot.MRWOTsedanbrakepedal <- ggplot(data = df.mainrightWOTsedan,
                                     aes(x = disFromRoadStart, y = appBrake)) +
   geom_point(aes(colour = factor(driverID)), size = 1) +
@@ -158,7 +157,7 @@ plot.MRWOTsedanbrakepedal <- ggplot(data = df.mainrightWOTsedan,
 plot.MRWOTsedanbrakepedal
 
 
-# 1.3.2 货车，制动踏板位移----
+# 3.2 货车，制动踏板位移----
 plot.MRWOTtruckbrakepedal <- ggplot(data = df.mainrightWOTtruck,
                                     aes(x = disFromRoadStart, y = appBrake)) +
   geom_point(aes(colour = factor(driverID)), size = 1) +
@@ -182,8 +181,8 @@ plot.MRWOTtruckbrakepedal <- ggplot(data = df.mainrightWOTtruck,
 plot.MRWOTtruckbrakepedal
 
 
-# 1.4 右线，油门踏板位移分析----
-#1.4.1 轿车，油门踏板位移----
+# 4 右线，油门踏板位移分析----
+# 4.1 轿车，油门踏板位移----
 plot.MRWOTsedangaspedal <- ggplot(data = df.mainrightWOTsedan,
                                   aes(x = disFromRoadStart, y = appGasPedal)) +
   geom_point(aes(colour = factor(driverID)), size = 1) +
@@ -207,7 +206,7 @@ plot.MRWOTsedangaspedal <- ggplot(data = df.mainrightWOTsedan,
 plot.MRWOTsedangaspedal
 
 
-# 1.4.2 货车，制动踏板位移----
+# 4.2 货车，油门踏板位移----
 plot.MRWOTtruckgaspedal <- ggplot(data = df.mainrightWOTtruck,
                                   aes(x = disFromRoadStart, y = appGasPedal)) +
   geom_point(aes(colour = factor(driverID)), size = 1) +
