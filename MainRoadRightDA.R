@@ -36,35 +36,197 @@ df.mainrightWTtruck <- subset(x = df.mainrightWT,
 
 # 1 右线行驶速度----
 # 1.1 右线，行驶速度分析----
-# 1.1.1 轿车----
+# 1.1.1 轿车，速度----
 plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
                                aes(x = disFromRoadStart, y = speedKMH)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
-  scale_x_continuous(name = "桩号", limits = c(969.9, 9027),
-                     breaks = seq(959.9, 9027, by = 1000),
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
                      labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
                                 "RK5", "RK6", "RK7", "RK8")) +
   scale_y_continuous(name = "速度（km/h）", limits = c(0, 120)) +
   annotate(geom = "rect", xmin = 2650, xmax = 8490,
            ymin = 0, ymax = 120, alpha = 0.2) +
   annotate(geom = "text", x = 2650, y = 120, label = "主线隧道洞口") +
-  annotate(geom = "text", x = )
+  annotate(geom = "text", x = 8490, y = 120, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
 
 plot.MRWOTsedanspeed
 
 
-max(df.mainright$disFromRoadStart)
+# 1.1.2 货车，速度----
+plot.MRWOTtruckspeed <- ggplot(data = df.mainrightWOTtruck,
+                               aes(x = disFromRoadStart, y = speedKMH)) +
+  geom_line(aes(colour = factor(driverID)), size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 120)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = 0, ymax = 120, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 120, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 120, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.MRWOTtruckspeed
 
 
+# 1.2 右线，加速度分析----
+# 1.2.1 轿车，加速度----
+plot.MRWOTsedanacc <- ggplot(data = df.mainrightWOTsedan,
+                             aes(x = disFromRoadStart, y = accZMS2)) +
+  geom_point(aes(colour = factor(driverID)), size =1) +
+  geom_hline(yintercept = c(-2, 2), colour = "orange",
+             linetype = "dashed", size = 1) +
+  geom_hline(yintercept = c(-3, 3), colour = "red",
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "加速度（m/s2）", limits = c(-5, 5)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = -5, ymax = 5, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 5, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 5, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.MRWOTsedanacc
 
 
+# 1.2.2 货车，加速度----
+plot.MRWOTtruckacc <- ggplot(data = df.mainrightWOTtruck,
+                             aes(x = disFromRoadStart, y = accZMS2)) +
+  geom_point(aes(colour = factor(driverID)), size =1) +
+  geom_hline(yintercept = c(-2, 2), colour = "orange",
+             linetype = "dashed", size = 1) +
+  geom_hline(yintercept = c(-3, 3), colour = "red",
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "加速度（m/s2）", limits = c(-5, 5)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = -5, ymax = 5, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 5, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 5, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.MRWOTtruckacc
 
 
+# 1.3 右线，制动踏板位移分析----
+# 1.3.1 轿车，制动踏板位移----
+plot.MRWOTsedanbrakepedal <- ggplot(data = df.mainrightWOTsedan,
+                                    aes(x = disFromRoadStart, y = appBrake)) +
+  geom_point(aes(colour = factor(driverID)), size = 1) +
+  geom_hline(yintercept = 0.5, colour = "red",
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "制动踏板位移", limits = c(0, 1)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = 0, ymax = 1, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 1, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 1, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.MRWOTsedanbrakepedal
 
 
+# 1.3.2 货车，制动踏板位移----
+plot.MRWOTtruckbrakepedal <- ggplot(data = df.mainrightWOTtruck,
+                                    aes(x = disFromRoadStart, y = appBrake)) +
+  geom_point(aes(colour = factor(driverID)), size = 1) +
+  geom_hline(yintercept = 0.5, colour = "red",
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "制动踏板位移", limits = c(0, 1)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = 0, ymax = 1, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 1, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 1, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.MRWOTtruckbrakepedal
 
 
+# 1.4 右线，油门踏板位移分析----
+#1.4.1 轿车，油门踏板位移----
+plot.MRWOTsedangaspedal <- ggplot(data = df.mainrightWOTsedan,
+                                  aes(x = disFromRoadStart, y = appGasPedal)) +
+  geom_point(aes(colour = factor(driverID)), size = 1) +
+  geom_hline(yintercept = 0.75, colour = "red",
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "油门踏板位移", limits = c(0, 1)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = 0, ymax = 1, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 1, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 1, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.MRWOTsedangaspedal
 
 
+# 1.4.2 货车，制动踏板位移----
+plot.MRWOTtruckgaspedal <- ggplot(data = df.mainrightWOTtruck,
+                                  aes(x = disFromRoadStart, y = appGasPedal)) +
+  geom_point(aes(colour = factor(driverID)), size = 1) +
+  geom_hline(yintercept = 0.75, colour = "red",
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(name = "桩号", limits = c(969.9, 9010),
+                     breaks = seq(959.9, 9010, by = 1000),
+                     labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
+                                "RK5", "RK6", "RK7", "RK8")) +
+  scale_y_continuous(name = "油门踏板位移", limits = c(0, 1)) +
+  annotate(geom = "rect", xmin = 2650, xmax = 8490,
+           ymin = 0, ymax = 1, alpha = 0.2) +
+  annotate(geom = "text", x = 2650, y = 1, label = "主线隧道洞口") +
+  annotate(geom = "text", x = 8490, y = 1, label = "主线隧道洞口") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12))
 
+plot.MRWOTtruckgaspedal
 
