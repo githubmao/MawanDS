@@ -43,7 +43,8 @@ plot.MRWOTsedanspeed <- ggplot(data = df.mainrightWOTsedan,
                      breaks = seq(959.9, 9010, by = 1000),
                      labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
                                 "RK5", "RK6", "RK7", "RK8")) +
-  scale_y_continuous(name = "速度（km/h）", limits = c(0, 120)) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 120),
+                     breaks = seq(0, 120, by = 20)) +
   annotate(geom = "rect", xmin = 2650, xmax = 8490,
            ymin = 0, ymax = 120, alpha = 0.2) +
   annotate(geom = "text", x = 2650, y = 120, label = "主线隧道洞口") +
@@ -65,7 +66,8 @@ plot.MRWOTtruckspeed <- ggplot(data = df.mainrightWOTtruck,
                      breaks = seq(959.9, 9010, by = 1000),
                      labels = c("RK0", "RK1", "RK2", "RK3", "RK4",
                                 "RK5", "RK6", "RK7", "RK8")) +
-  scale_y_continuous(name = "速度（km/h）", limits = c(0, 120)) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 120),
+                     breaks = seq(0, 120, by = 20)) +
   annotate(geom = "rect", xmin = 2650, xmax = 8490,
            ymin = 0, ymax = 120, alpha = 0.2) +
   annotate(geom = "text", x = 2650, y = 120, label = "主线隧道洞口") +
