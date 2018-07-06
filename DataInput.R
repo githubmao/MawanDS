@@ -88,6 +88,12 @@ df.dsdata$laneOffset <- as.numeric(df.dsdata$laneOffset)
 
 df.dsdata$laneWidth <- as.numeric(df.dsdata$laneWidth)
 
+df.dsdata$laneDirectionX <- as.numeric(df.dsdata$laneDirectionX)
+df.dsdata$laneDirectionY <- as.numeric(df.dsdata$laneDirectionY)
+df.dsdata$laneDirectionZ <- as.numeric(df.dsdata$laneDirectionZ)
+
+df.dsdata$logitudinalSlope <- as.numeric(df.dsdata$logitudinalSlope)
+df.dsdata$lateralSlope <- as.numeric(df.dsdata$lateralSlope)
 
 
 
