@@ -116,8 +116,6 @@ CalcDrivingTraj <- function(data,
   #
   # 输入：
   # data：重命名后的数据框，含 disToLeftBorder, roadName等数据。
-  # kMainRoadName：主线道路名称，默认为NA。
-  # kRampRoadName：匝道道路名称，默认为NA。
   # is.main2ramp：主线进入匝道为 TRUE，匝道进入主线为 FALSE，默认为NA。
   # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
   #
@@ -127,11 +125,7 @@ CalcDrivingTraj <- function(data,
     stop("Please input the 'is.main2ramp'.")  # 没有输入is.main2ramp
   } else if (is.na(is.disdecrease)) {
     stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
-  } else if (is.numeric(is.main2ramp) | is.character(is.main2ramp)) {
-    stop("Please input an 'logical' variable in 'is.main2ramp'.")
-  } else if (is.numeric(is.disdecrease) | is.character(is.disdecrease) ) {
-    stop("Please input an 'logical' variable in 'is.disdecrease'.")
-  } else {
+  } else if (is.logical(is.main2ramp) & is.logical(is.disdecrease)) {
     
     data <- data[order(data$disTravelled,
                        decreasing = is.disdecrease),]  # data按桩号排列
@@ -155,27 +149,59 @@ CalcDrivingTraj <- function(data,
       if (is.main2ramp) {
         tmp.subdata1$drivingTraj <- tmp.subdata1$disToLeftBorder  # 主线轨迹
         tmp.subdata2$drivingTraj <- tmp.subdata2$disToLeftBorder +
-                                    kDeltaDisBorder  # 匝道轨迹
+          kDeltaDisBorder  # 匝道轨迹
       } else {
         tmp.subdata1$drivingTraj <- tmp.subdata1$disToLeftBorder +
-                                    kDeltaDisBorder  # 匝道轨迹
+          kDeltaDisBorder  # 匝道轨迹
         tmp.subdata2$drivingTraj <- tmp.subdata2$disToLeftBorder  # 主线轨迹
       }
       
       return(rbind(tmp.subdata1, tmp.subdata2))
     }
+  } else {
+    stop("Please check the input 'data', 'is.main2ramp' and 'is.disdecrease'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'is.main2ramp' should be a logical variable.\
+  The 'is.disdecrease' should be a logical variable.")
   }
 }
 
 
 
-
-
-
-
-
-
-
+# 批量计算行车轨迹----
+CalcTraj <- function(data,
+                     kDriverID = NA,
+                     is.main2ramp = NA,
+                     is.disdecrease = NA){
+  # 依据CalcDrivingTraj函数，批量计算行车轨迹。
+  #
+  # 输入：
+  # data：重命名后的数据框，含 disToLeftBorder, roadName等数据。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # is.main2ramp：CalcDrivingTraj函数中的is.main2ramp参数值，默认为NA。
+  # is.disdecrease：CalcDrivingTraj函数中的is.disdecrease参数值，默认为NA。
+  #
+  # 输出：含行车轨迹变量 drivingTraj 的数据框。
+  
+  if (is.character(kDriverID)) {
+    
+    df.traj <- data.frame()  # 输出数据康
+    
+    for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的DrivingTraj
+      tmpdf.calctraj <- CalcDrivingTraj(data[data$driverID == kDriverID[kIDidx],],
+                                        is.main2ramp = is.main2ramp,
+                                        is.disdecrease = is.disdecrease)
+      
+      df.traj <- rbind(df.traj, tmpdf.calctraj)
+    }
+    
+    return(df.traj)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+  The 'kDriverID' should be a character vector variable.")
+  }
+}
 
 
 
