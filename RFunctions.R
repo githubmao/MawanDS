@@ -167,7 +167,6 @@ CalcDrivingTraj <- function(data,
 }
 
 
-
 # 批量计算行车轨迹----
 CalcTraj <- function(data,
                      kDriverID = NA,
@@ -204,8 +203,69 @@ CalcTraj <- function(data,
 }
 
 
+# 计算车道跨越点----
+CalcLCPoint <- function(data,
+                        kLatDis = NA,
+                        is.main2ramp = NA,
+                        is.disdecrease = NA){
+  # 计算车道跨越点的数据行行号，车道跨越判定原则：依据DisToLeftBorder输出值，即
+  # drivingTraj值，设定阈值，模拟车从主线进入匝道时，车道跨越位置为前一时刻该输
+  # 出值小于阈值、且下一时刻该输出值大于或等于阈值的位置点（匝道进入主线反之）。
+  #
+  # 输出：
+  # data：重命名且经过CalcDrivingTraj函数计算的数据框。
+  # kLatDis：车道跨越阈值，默认为NA。
+  # is.main2ramp：CalcDrivingTraj函数中的is.main2ramp参数值，默认为NA。
+  # is.disdecrease：CalcDrivingTraj函数中的is.disdecrease参数值，默认为NA。
+  #
+  # 输出：车道跨越点的位置行号，有多个满足判定条件的位置点（即反复换道时），输出
+  #       为一组数值向量。
+  
+  if (is.na(kLatDis)) {
+    stop("Please input the 'kLatDis'.")  # 没有输出kLatDis
+  } else if (is.na(is.main2ramp)) {
+    stop("Please input the 'is.main2ramp'.")  # 没有输出is.main2ramp
+  } else if (is.na(is.disdecrease)) {
+    stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
+  } else if (is.numeric(kLatDis) & is.logical(is.main2ramp) &
+             is.logical(is.disdecrease)) {
+    
+    data <- data[order(data$disTravelled,
+                       decreasing = is.disdecrease),]  # 按桩号排列数据
+    
+    # 生成前一时刻的drivingTraj
+    tmp.data <- transform(data,
+                          drivingTrajB4 = c(drivingTraj[1],
+                                            drivingTraj[-length(drivingTraj)]))
+    
+    # 计算车道跨越点数据行号
+    if (is.main2ramp) {
+      kLCRowNo <- which(tmp.data$drivingTraj > kLatDis &
+                          tmp.data$drivingTrajB4 <= kLatDis)
+    } else {
+      kLCRowNo <- which(tmp.data$drivingTraj < kLatDis &
+                          tmp.data$drivingTrajB4 >= kLatDis)
+    }
+    
+    return(kLCRowNo)
+  } else {
+    stop("Please check the input 'data', 'kLatDis', 'is.main2ramp'\
+  and 'is.disdecrease'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'kLatDis' should be a numeric variable.\
+  The 'is.main2ramp' should be a logical variable.\
+  The 'is.disdecrease' should be a logical variable.")
+  }
+}
 
 
+# 批量计算车道跨越点及其他特征点的车速----
+CalcDisSpeed <- function(data,
+                         kDriverID = NA,
+                         kDis = NA){
+  
+  
+}
 
 
 
