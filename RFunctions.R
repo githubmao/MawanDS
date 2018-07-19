@@ -168,10 +168,10 @@ CalcDrivingTraj <- function(data,
 
 
 # 批量计算行车轨迹----
-CalcTraj <- function(data,
-                     kDriverID = NA,
-                     is.main2ramp = NA,
-                     is.disdecrease = NA){
+CalcBatchTraj <- function(data,
+                          kDriverID = NA,
+                          is.main2ramp = NA,
+                          is.disdecrease = NA){
   # 依据CalcDrivingTraj函数，批量计算行车轨迹。
   #
   # 输入：
@@ -184,7 +184,7 @@ CalcTraj <- function(data,
   
   if (is.character(kDriverID)) {
     
-    df.traj <- data.frame()  # 输出数据康
+    df.traj <- data.frame()  # 输出数据框
     
     for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的DrivingTraj
       tmpdf.calctraj <- CalcDrivingTraj(data[data$driverID == kDriverID[kIDidx],],
@@ -215,8 +215,8 @@ CalcLCPoint <- function(data,
   # 输出：
   # data：重命名且经过CalcDrivingTraj函数计算的数据框。
   # kLatDis：车道跨越阈值，默认为NA。
-  # is.main2ramp：CalcDrivingTraj函数中的is.main2ramp参数值，默认为NA。
-  # is.disdecrease：CalcDrivingTraj函数中的is.disdecrease参数值，默认为NA。
+  # is.main2ramp：主线进入匝道为 TRUE，匝道进入主线为 FALSE，默认为NA。
+  # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
   #
   # 输出：车道跨越点的位置行号，有多个满足判定条件的位置点（即反复换道时），输出
   #       为一组数值向量。
@@ -259,19 +259,49 @@ CalcLCPoint <- function(data,
 }
 
 
-# 批量计算车道跨越点及其他特征点的车速----
-CalcDisSpeed <- function(data,
-                         kDriverID = NA,
-                         kDis = NA){
+# 批量计算车道跨越点----
+CalcBatchLCPoint <- function(data,
+                             kDriverID = NA,
+                             kLatDis = NA,
+                             is.main2ramp = NA,
+                             is.disdecrease = NA){
+  # 依据CalcLCPoint函数，批量计算车道跨越点。
+  #
+  # 输入：
+  # data：重命名且经过CalcDrivingTraj函数计算的数据框据。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # is.main2ramp：CalcLCPoint函数中的is.main2ramp参数值，默认为NA。
+  # is.disdecrease：CalcLCPoint函数中的is.disdecrease参数值，默认为NA。
+  #
+  # 输出：含行车轨迹变量 drivingTraj 的数据框。
   
-  
+  if (is.character(kDriverID)) {
+    
+    df.LCpoints <- data.frame()  # 输出数据框
+    
+    for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的LC Point
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidx],]
+      kLCPoint <- CalcLCPoint(tmp.df,
+                              kLatDis = kLatDis,
+                              is.main2ramp = is.main2ramp,
+                              is.disdecrease = is.disdecrease)
+      
+      tmpdf.LCpoint <- data.frame(rowNo = kLCPoint,
+                                  disTravelled = tmp.df$disTravelled[kLCPoint],
+                                  drivingTraj = tmp.df$drivingTraj[kLCPoint],
+                                  driverID = tmp.df$driverID[kLCPoint])
+      
+      df.LCpoints <- rbind(df.LCpoints, tmpdf.LCpoint)
+    }
+    
+    return(df.LCpoints)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+  The 'kDriverID' should be a character vector variable.")
+  }
 }
-
-
-
-
-
-
 
 
 
