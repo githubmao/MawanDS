@@ -1091,7 +1091,29 @@ plot.zd1WOTtruckgaspedal
 # 7 关键位置速度分布分析----
 # 7.1 轿车，关键位置速度分布----
 # 7.1.1 轿车，关键位置速度，无交通流----
+df.zd1WOTsedanspotspeed <- CalcBatchSpotSpeed(data = df.zd1WOTsedan,
+                                              kDriverID = c("S0101", "S0201",
+                                                            "S0301", "S0401",
+                                                            "S0501", "S0601",
+                                                            "S0701", "S0801",
+                                                            "S0901", "S1002",
+                                                            "S1101", "S1201",
+                                                            "S1301", "S1401",
+                                                            "S1501", "S1601",
+                                                            "S1701", "S1801",
+                                                            "S2002"),
+                                              kDis = c(582, 802, 852),
+                                              is.disdecrease = FALSE,
+                                              kTag = c("accSTRT",
+                                                       "accEnd/transSTRT",
+                                                       "transEnd"),
+                                              kDisType = "Dis")
 
+plotdf.zd1WOTsedanspotspeed <- ddply(.data = df.zd1WOTsedanspotspeed,
+                                     .variables = .(disTag),
+                                     .fun = summarize, 
+                                     MeanSpeed = mean(speedKMH),
+                                     SD = sd(speedKMH))
 
 
 # 7.1.2 轿车，关键位置速度，有交通流----
