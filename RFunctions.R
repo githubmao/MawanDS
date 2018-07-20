@@ -187,7 +187,9 @@ CalcBatchTraj <- function(data,
     df.traj <- data.frame()  # 输出数据框
     
     for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的DrivingTraj
-      tmpdf.calctraj <- CalcDrivingTraj(data[data$driverID == kDriverID[kIDidx],],
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidx],]
+      tmpdf.calctraj <- CalcDrivingTraj(data = tmp.df,
                                         is.main2ramp = is.main2ramp,
                                         is.disdecrease = is.disdecrease)
       
@@ -222,9 +224,9 @@ CalcLCPoint <- function(data,
   #       为一组数值向量。
   
   if (is.na(kLatDis)) {
-    stop("Please input the 'kLatDis'.")  # 没有输出kLatDis
+    stop("Please input the 'kLatDis'.")  # 没有输入kLatDis
   } else if (is.na(is.main2ramp)) {
-    stop("Please input the 'is.main2ramp'.")  # 没有输出is.main2ramp
+    stop("Please input the 'is.main2ramp'.")  # 没有输入is.main2ramp
   } else if (is.na(is.disdecrease)) {
     stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
   } else if (is.numeric(kLatDis) & is.logical(is.main2ramp) &
@@ -273,7 +275,8 @@ CalcBatchLCPoint <- function(data,
   # is.main2ramp：CalcLCPoint函数中的is.main2ramp参数值，默认为NA。
   # is.disdecrease：CalcLCPoint函数中的is.disdecrease参数值，默认为NA。
   #
-  # 输出：含行车轨迹变量 drivingTraj 的数据框。
+  # 输出：含车道跨越点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID的
+  #       数据框。
   
   if (is.character(kDriverID)) {
     
@@ -282,7 +285,7 @@ CalcBatchLCPoint <- function(data,
     for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的LC Point
       
       tmp.df <- data[data$driverID == kDriverID[kIDidx],]
-      kLCPoint <- CalcLCPoint(tmp.df,
+      kLCPoint <- CalcLCPoint(data = tmp.df,
                               kLatDis = kLatDis,
                               is.main2ramp = is.main2ramp,
                               is.disdecrease = is.disdecrease)
@@ -302,6 +305,126 @@ CalcBatchLCPoint <- function(data,
   The 'kDriverID' should be a character vector variable.")
   }
 }
+
+
+# 计算特征位置的车速----
+CalcSpotSpeed <- function(data,
+                          kDis = NA,
+                          is.disdecrease = NA,
+                          kTag = NA,
+                          kDisType = "Dis"){
+  # 计算特征位置的车速。
+  #
+  # 输入：
+  # data：重命名后的数据框。
+  # kDis：特征位置的桩号或行号，可以为一组向量，默认为NA。
+  # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
+  # kTag：特征位置的标签值，默认为NA。
+  # kDisType：计算模式，kDis为特征位置的桩号时，选"Dis"模式；kDis为特征位置的行
+  #           号时，选"RowNo"模式；默认为"Dis"模式。
+  #
+  # 输出：含特征位置行号、桩号、速度、驾驶人ID、特征标签值的数据框。
+  
+  if (is.na(kDis[1])) {
+    stop("Please input the 'kDis'.")  # 没有输入kDis
+  } else if (is.na(is.disdecrease)) {
+    stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
+  } else if (is.na(kTag)[1]) {
+    stop("Please input the 'kTag'.")  # 没有输入kTag
+  } else if (is.numeric(kDis) & is.logical(is.disdecrease) &
+             is.character(kTag) & is.character(kDisType)) {
+    
+    if (kDisType == "Dis") {  # kDis为特征位置的桩号
+      
+      data <- data[order(data$disTravelled,
+                         decreasing = is.disdecrease),]  # 按桩号排列数据
+      
+      kDisRowNo <- c()  # 特征位置行号输出向量
+      
+      for (kDisidx in 1:length(kDis)) {  # 依次计算各特征行号
+        kDisRowNo <- append(kDisRowNo,
+                            which.min(abs(data$disTravelled - kDis[kDisidx])))
+      }
+      
+      return(data.frame(rowNo = kDisRowNo,
+                        disTravelled = data$disTravelled[kDisRowNo],
+                        speedKMH = data$speedKMH[kDisRowNo],
+                        driverID = data$driverID[kDisRowNo],
+                        disTag = kTag))
+      
+      
+    } else if (kDisType == "RowNo") {  # kDis为特征位置的数据行号
+      
+      data <- data[order(data$disTravelled,
+                         decreasing = is.disdecrease),]  # 按桩号排列数据
+      
+      return(data.frame(rowNo = kDis,
+                        disTravelled = data$disTravelled[kDis],
+                        speedKMH = data$speedKMH[kDis],
+                        driverID = data$driverID[kDis],
+                        disTag = kTag))
+    } else {
+      stop("Please check the input 'kDisType'.\
+  The 'kDisType' is the calculation method to be used. The default 'Dis' implies\
+  the input 'kDis' is the 'Distance From Road Start'. The other method is 'RowNo'\
+  which means the input 'kDis' is the 'Row Number'.")
+    }
+    
+  } else {
+    stop("Please check the input 'data', 'kDis', 'is.disdecrease', and 'kTag'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'kDis' should be a numeric variable.\
+  The 'is.disdecrease' should be a logical variable.\
+  The 'kTag' should be a character variable.")
+  }
+}
+
+
+# 批量计算特征位置的车速----
+CalcBatchSpotSpeed <- function(data,
+                               kDriverID = NA,
+                               kDis = NA,
+                               is.disdecrease = NA,
+                               kTag = NA,
+                               kDisType = "Dis"){
+  # 依据CalcSpotSpeed函数，批量计算特征位置的车速。
+  #
+  # 输入：
+  # data：重命名后的数据框。
+  # kDis：CalcSpotSpeed函数中的kDis，默认为NA。
+  # is.disdecrease：CalcSpotSpeed函数中的is.disdecrease，默认为NA。
+  # kTag：CalcSpotSpeed函数中的kTag，默认为NA。
+  # kDisType：CalcSpotSpeed函数中的kDisType，默认为"Dis"。
+  #
+  # 输出：含车道跨越点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID的
+  #       数据框。
+  
+  if (is.character(kDriverID)) {
+    
+    df.spotspeed <- data.frame()  # 输出数据框
+    
+    for (kIDidex in 1:length(kDriverID)) {  # 依次计算各个驾驶人的特征位置速度
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidex],]
+      tmpdf.spotspeed <- CalcSpotSpeed(data = tmp.df,
+                                       kDis = kDis,
+                                       is.disdecrease = is.disdecrease,
+                                       kTag = kTag,
+                                       kDisType = kDisType)
+      
+      df.spotspeed <- rbind(df.spotspeed, tmpdf.spotspeed)
+    }
+    
+    return(df.spotspeed)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+  The 'kDriverID' should be a character vector variable.")
+  }
+}
+
+
+
 
 
 
