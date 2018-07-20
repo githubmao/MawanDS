@@ -130,7 +130,7 @@ plot.zd1WOTtruckspeed
 # 2 匝道1，轨迹分析----
 # 2.1 轿车，轨迹----
 # 2.1.1 轿车，轨迹，无交通流----
-plotdf.zd1WOTsedan <- CalcBatchTraj(data = df.zd1WOTsedan,
+df.zd1WOTsedantraj <- CalcBatchTraj(data = df.zd1WOTsedan,
                                     kDriverID = c("S0101", "S0201", "S0301",
                                                   "S0401", "S0501", "S0601",
                                                   "S0701", "S0801", "S0901",
@@ -141,7 +141,7 @@ plotdf.zd1WOTsedan <- CalcBatchTraj(data = df.zd1WOTsedan,
                                     is.main2ramp = FALSE,
                                     is.disdecrease = FALSE)
 
-plot.zd1WOTsedantraj <- ggplot(data = plotdf.zd1WOTsedan,
+plot.zd1WOTsedantraj <- ggplot(data = df.zd1WOTsedantraj,
                                aes(x = disTravelled, y = drivingTraj)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
     # 主线车道边缘线1
@@ -229,7 +229,7 @@ plot.zd1WOTsedantraj
 
 
 # 2.1.2 轿车，轨迹，有交通流----
-plotdf.zd1WTsedan <- CalcBatchTraj(data = df.zd1WTsedan,
+df.zd1WTsedantraj <- CalcBatchTraj(data = df.zd1WTsedan,
                                    kDriverID = c("S0101", "S0301",
                                                  "S0401", "S0501", "S0601",
                                                  "S0701", "S0801",
@@ -240,7 +240,7 @@ plotdf.zd1WTsedan <- CalcBatchTraj(data = df.zd1WTsedan,
                                    is.main2ramp = FALSE,
                                    is.disdecrease = FALSE)
 
-plot.zd1WTsedantraj <- ggplot(data = plotdf.zd1WTsedan,
+plot.zd1WTsedantraj <- ggplot(data = df.zd1WTsedantraj,
                               aes(x = disTravelled, y = drivingTraj)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
   # 主线车道边缘线1
@@ -328,14 +328,14 @@ plot.zd1WTsedantraj
 
 
 # 2.2 货车，轨迹----
-plotdf.zd1WOTtruck <- CalcBatchTraj(data = df.zd1WOTtruck,
+df.zd1WOTtrucktraj <- CalcBatchTraj(data = df.zd1WOTtruck,
                                     kDriverID = c("T0101", "T0201", "T0301",
                                                   "T0401", "T0501", "T0601",
                                                   "T0701"),
                                     is.main2ramp = FALSE,
                                     is.disdecrease = FALSE)
 
-plot.zd1WOTtrucktraj <- ggplot(data = plotdf.zd1WOTtruck,
+plot.zd1WOTtrucktraj <- ggplot(data = df.zd1WOTtrucktraj,
                                aes(x = disTravelled, y = drivingTraj)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
   # 主线车道边缘线1
@@ -1088,11 +1088,30 @@ plot.zd1WOTtruckgaspedal <- ggplot(data = df.zd1WOTtruck,
 plot.zd1WOTtruckgaspedal
 
 
+# 7 关键位置速度分布分析----
+# 7.1 轿车，关键位置速度分布----
+# 7.1.1 轿车，关键位置速度，无交通流----
 
 
 
+# 7.1.2 轿车，关键位置速度，有交通流----
+# 7.2 货车，关键位置速度分布----
 
 
+
+# 8 大加速度分布分析----
+# 8.1 轿车，大加速度分布----
+# 8.1.1 轿车，大加速度，无交通流----
+# 8.1.2 轿车，大加速度，有交通流----
+# 8.2 货车，大加速度----
+
+
+
+# 9 大减速度分布分析----
+# 9.1 轿车，大减速度分布----
+# 9.1.1 轿车，大减速度，无交通流----
+# 9.1.2 轿车，大减速度，有交通流----
+# 9.2 货车，大减速度----
 
 
 
