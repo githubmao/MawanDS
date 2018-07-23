@@ -425,7 +425,7 @@ plot.zd1WOTtrucktraj
 # 3 匝道1，车道跨越点分析----
 # 3.1 轿车，车道跨越点----
 # 3.1.1 轿车，车道跨越点，无交通流----
-df.zd1WOTsedanLCpoints <- CalcBatchLCPoint(data = plotdf.zd1WOTsedan,
+df.zd1WOTsedanLCpoints <- CalcBatchLCPoint(data = df.zd1WOTsedantraj,
                                            kDriverID = c("S0101", "S0201",
                                                          "S0301", "S0401",
                                                          "S0501", "S0601",
@@ -441,7 +441,7 @@ df.zd1WOTsedanLCpoints <- CalcBatchLCPoint(data = plotdf.zd1WOTsedan,
                                            is.disdecrease = FALSE)
 
 plot.zd1WOTsedanLCpoints <- ggplot(data = df.zd1WOTsedanLCpoints,
-                                    aes(x = disTravelled, y = drivingTraj)) +
+                                   aes(x = disTravelled, y = drivingTraj)) +
   geom_jitter(shape = 21, fill = "white", size = 2, stroke = 2) +
   # 平均换道位置
   geom_vline(xintercept = median(df.zd1WOTsedanLCpoints$disTravelled),
@@ -550,7 +550,7 @@ plot.zd1WOTsedanLCpoints
 
 
 # 3.1.2 轿车，车道跨越点，有交通流----
-df.zd1WTsedanLCpoints <- CalcBatchLCPoint(data = plotdf.zd1WTsedan,
+df.zd1WTsedanLCpoints <- CalcBatchLCPoint(data = df.zd1WTsedantraj,
                                           kDriverID = c("S0101", "S0301",
                                                         "S0401", "S0501",
                                                         "S0601", "S0701",
@@ -681,7 +681,7 @@ plot.zd1WTsedanLCpoints
 
 
 # 3.2 货车，车道跨越点----
-df.zd1WOTtruckLCpoints <- CalcBatchLCPoint(data = plotdf.zd1WOTtruck,
+df.zd1WOTtruckLCpoints <- CalcBatchLCPoint(data = df.zd1WOTtrucktraj,
                                            kDriverID = c("T0101", "T0201",
                                                          "T0301", "T0401",
                                                          "T0501", "T0601",
@@ -689,7 +689,7 @@ df.zd1WOTtruckLCpoints <- CalcBatchLCPoint(data = plotdf.zd1WOTtruck,
                                            kLatDis = 11.45,
                                            is.main2ramp = FALSE,
                                            is.disdecrease = FALSE)
-median(df.zd1WOTtruckLCpoints$disTravelled)
+
 plot.zd1WOTtruckLCpoints <- ggplot(data = df.zd1WOTtruckLCpoints,
                                    aes(x = disTravelled, y = drivingTraj)) +
   geom_jitter(shape = 21, fill = "white", size = 2, stroke = 2) +
@@ -1109,16 +1109,174 @@ df.zd1WOTsedanspotspeed <- CalcBatchSpotSpeed(data = df.zd1WOTsedan,
                                                        "transEnd"),
                                               kDisType = "Dis")
 
-plotdf.zd1WOTsedanspotspeed <- ddply(.data = df.zd1WOTsedanspotspeed,
-                                     .variables = .(disTag),
-                                     .fun = summarize, 
-                                     MeanSpeed = mean(speedKMH),
-                                     SD = sd(speedKMH))
+df.zd1WOTsedanspotspeed <- subset(df.zd1WOTsedanLCpoints,
+                                  select = c("rowNo", "disTravelled",
+                                             "speedKMH", "driverID")) %>%
+  transform(disTag = factor("LCPoint")) %>%
+  rbind(df.zd1WOTsedanspotspeed)  # 计算换道位置速度
+
+df.zd1WOTsedanspotspeed <- transform(df.zd1WOTsedanspotspeed,
+                                     scenType = "WOT")  # 增加对比场景标签
+
+# 特征点速度统计量计算
+plotdf.zd1WOTsedanspotspeed <- ddply(df.zd1WOTsedanspotspeed,
+                                     .(disTag),
+                                     summarize,
+                                     meanSpeed = mean(speedKMH),
+                                     sdSpeed = sd(speedKMH))
+
+plot.zd1WOTsedanspotspeed <- ggplot(data = plotdf.zd1WOTsedanspotspeed,
+                                    aes(x = disTag, y = meanSpeed)) +
+  geom_bar(stat = "identity", width = 0.15) +
+  geom_errorbar(aes(ymax = meanSpeed + sdSpeed, ymin = meanSpeed - sdSpeed),
+                width = 0.1, size =1) +
+  scale_x_discrete(limits = c("accSTRT", "accEnd/transSTRT",
+                              "LCPoint", "transEnd"),
+                   labels = c("加速段起点", "加速段终点\n(渐变段起点)",
+                              "换道位置", "渐变段终点")) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 100)) +
+  theme(axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.zd1WOTsedanspotspeed
 
 
 # 7.1.2 轿车，关键位置速度，有交通流----
-# 7.2 货车，关键位置速度分布----
+df.zd1WTsedanspotspeed <- CalcBatchSpotSpeed(data = df.zd1WTsedan,
+                                             kDriverID = c("S0101", "S0301",
+                                                           "S0401", "S0501",
+                                                           "S0601", "S0701",
+                                                           "S0801", "S1001",
+                                                           "S1101", "S1201",
+                                                           "S1301", "S1401",
+                                                           "S1501", "S1601",
+                                                           "S1701", "S1801",
+                                                           "S1901", "S2001"),
+                                             kDis = c(582, 802, 852),
+                                             is.disdecrease = FALSE,
+                                             kTag = c("accSTRT",
+                                                      "accEnd/transSTRT",
+                                                      "transEnd"),
+                                             kDisType = "Dis")
 
+df.zd1WTsedanspotspeed <- subset(df.zd1WTsedanLCpoints,
+                                 select = c("rowNo", "disTravelled",
+                                            "speedKMH", "driverID")) %>%
+  transform(disTag = factor("LCPoint")) %>%
+  rbind(df.zd1WTsedanspotspeed)  # 计算换道位置速度
+
+df.zd1WTsedanspotspeed <- transform(df.zd1WTsedanspotspeed,
+                                    scenType = "WT")  # 增加对比场景标签
+
+# 特征点速度统计量计算
+plotdf.zd1WTsedanspotspeed <- ddply(df.zd1WTsedanspotspeed,
+                                    .(disTag),
+                                    summarize,
+                                    meanSpeed = mean(speedKMH),
+                                    sdSpeed = sd(speedKMH))
+
+plot.zd1WTsedanspotspeed <- ggplot(data = plotdf.zd1WTsedanspotspeed,
+                                   aes(x = disTag, y = meanSpeed)) +
+  geom_bar(stat = "identity", width = 0.15) +
+  geom_errorbar(aes(ymax = meanSpeed + sdSpeed, ymin = meanSpeed - sdSpeed),
+                width = 0.1, size =1) +
+  scale_x_discrete(limits = c("accSTRT", "accEnd/transSTRT",
+                              "LCPoint", "transEnd"),
+                   labels = c("加速段起点", "加速段终点\n(渐变段起点)",
+                              "换道位置", "渐变段终点")) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 100)) +
+  theme(axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.zd1WTsedanspotspeed
+
+
+# 7.1.3 轿车，关键位置速度，无交通流 vs 有交通流----
+# 特征点速度统计量计算，WOT vs WT
+df.zd1sedanspotspeed <- rbind(df.zd1WOTsedanspotspeed,
+                                df.zd1WTsedanspotspeed)
+
+plotdf.zd1sedanspotspeed <- ddply(df.zd1sedanspotspeed,
+                                  .(disTag, scenType),
+                                  summarize,
+                                  meanSpeed = mean(speedKMH),
+                                  sdSpeed = sd(speedKMH))
+
+plot.zd1sedanspotspeed <- ggplot(data = plotdf.zd1sedanspotspeed,
+                                 aes(x = disTag, y = meanSpeed,
+                                     fill = scenType)) +
+  geom_bar(stat = "identity", position = position_dodge(),
+           width = 0.3, colour = "black") +
+  geom_errorbar(aes(ymax = meanSpeed + sdSpeed, ymin = meanSpeed - sdSpeed),
+                position = position_dodge(0.3), width = 0.2) +
+  scale_x_discrete(limits = c("accSTRT", "accEnd/transSTRT",
+                              "LCPoint", "transEnd"),
+                   labels = c("加速段起点", "加速段终点\n(渐变段起点)",
+                              "换道位置", "渐变段终点")) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 100)) +
+  scale_fill_discrete(breaks=c("WOT", "WT"),
+                      labels=c("w/o Traffic", "w/ Traffic")) +
+  theme(legend.title = element_blank(),
+        legend.position = "top",
+        legend.text = element_text(face = "bold", size = 10),
+        legend.key.size = unit(0.3, "cm"),
+        axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.zd1sedanspotspeed
+
+
+# 7.2 货车，关键位置速度分布----
+df.zd1WOTtruckspotspeed <- CalcBatchSpotSpeed(data = df.zd1WOTtruck,
+                                              kDriverID = c("T0101", "T0201",
+                                                            "T0301", "T0401",
+                                                            "T0501", "T0601",
+                                                            "T0701"),
+                                              kDis = c(582, 802, 852),
+                                              is.disdecrease = FALSE,
+                                              kTag = c("accSTRT",
+                                                       "accEnd/transSTRT",
+                                                       "transEnd"),
+                                              kDisType = "Dis")  # 特征位置速度
+
+df.zd1WOTtruckspotspeed <- subset(df.zd1WOTtruckLCpoints,
+                                  select = c("rowNo", "disTravelled",
+                                             "speedKMH", "driverID")) %>%
+  transform(disTag = factor("LCPoint")) %>%
+  rbind(df.zd1WOTtruckspotspeed)  # 计算换道位置速度
+
+df.zd1WOTtruckspotspeed <- transform(df.zd1WOTtruckspotspeed,
+                                     scenType = "WOT")  # 增加对比场景标签
+
+# 特征点速度统计量计算
+plotdf.zd1WOTtruckspotspeed <- ddply(df.zd1WOTtruckspotspeed,
+                                     .(disTag),
+                                     summarize,
+                                     meanSpeed = mean(speedKMH),
+                                     sdSpeed = sd(speedKMH))
+
+plot.zd1WOTtruckspotspeed <- ggplot(data = plotdf.zd1WOTtruckspotspeed,
+                                    aes(x = disTag, y = meanSpeed)) +
+  geom_bar(stat = "identity", width = 0.15) +
+  geom_errorbar(aes(ymax = meanSpeed + sdSpeed, ymin = meanSpeed - sdSpeed),
+                width = 0.1, size =1) +
+  scale_x_discrete(limits = c("accSTRT", "accEnd/transSTRT",
+                              "LCPoint", "transEnd"),
+                   labels = c("加速段起点", "加速段终点\n(渐变段起点)",
+                              "换道位置", "渐变段终点")) +
+  scale_y_continuous(name = "速度（km/h）", limits = c(0, 100)) +
+  theme(axis.text.x = element_text(face = "bold", size = 10),
+        axis.text.y = element_text(face = "bold", size = 10),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(face = "bold", size = 12))
+
+plot.zd1WOTtruckspotspeed
 
 
 # 8 大加速度分布分析----
