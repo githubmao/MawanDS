@@ -293,7 +293,8 @@ CalcBatchLCPoint <- function(data,
       tmpdf.LCpoint <- data.frame(rowNo = kLCPoint,
                                   disTravelled = tmp.df$disTravelled[kLCPoint],
                                   drivingTraj = tmp.df$drivingTraj[kLCPoint],
-                                  driverID = tmp.df$driverID[kLCPoint])
+                                  driverID = tmp.df$driverID[kLCPoint],
+                                  speedKMH = tmp.df$speedKMH[kLCPoint])
       
       df.LCpoints <- rbind(df.LCpoints, tmpdf.LCpoint)
     }
