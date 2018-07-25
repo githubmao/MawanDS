@@ -387,11 +387,12 @@ CalcBatchSpotSpeed <- function(data,
                                kDis = NA,
                                is.disdecrease = NA,
                                kTag = NA,
-                               kDisType = "Dis"){
+                               kDisType = NA){
   # 依据CalcSpotSpeed函数，批量计算特征位置的车速。
   #
   # 输入：
   # data：重命名后的数据框。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
   # kDis：CalcSpotSpeed函数中的kDis，默认为NA。
   # is.disdecrease：CalcSpotSpeed函数中的is.disdecrease，默认为NA。
   # kTag：CalcSpotSpeed函数中的kTag，默认为NA。
@@ -423,6 +424,159 @@ CalcBatchSpotSpeed <- function(data,
   The 'kDriverID' should be a character vector variable.")
   }
 }
+
+
+# 计算加速度or减速度较大的点----
+CalcAccOutliers <- function(data,
+                            kQuantile = NA,
+                            kAccLimit = NA,
+                            kOutliersType = "Dec",
+                            is.indv = TRUE){
+  # 计算加速度or减速度较大的点。
+  #
+  # 输入：
+  # data：重命名后的数据框，经过CalcDrivingTraj计算行车轨迹。
+  # kQuantile：计算的百分位数，默认为NA。
+  # kAccLimit: 计算的加速度or减速度边界值，默认为NA。
+  # kOutliersType：计算模式，计算加速度较大的点选"Acc"模式，计算减速度较大的点选
+  #                "Dec"模式，默认为"Dec"模式。
+  # 注意：（1）kQuantile为0.85、kOutliersType为"Acc"时，输出为计算得到的加速度
+  #           大于行车数据中85分位数加速度的数据；
+  #       （2）kQuantile为0.15、kOutliersType为"Dec"时，输出为计算得到的减速度
+  #           小于行车数据中15分位数（即减速度绝对值大于85分位数）减速度的数据。
+  # is.indv: 默认为TRUE，表示每个驾驶人的加速度or减速度边界值单独计算；
+  #          FALSE表示所有驾驶人的加速度or减速度边界值为同一数值。
+  #
+  # 输出：加速度or减速度较大的数据组成的数据框。
+  
+  if (is.na(is.indv)) {
+    stop("Please input the 'is.indv'.")  # 没有输入is.indv
+  } else if (is.logical(is.indv)) {
+    
+    
+    if (is.indv) {  # 个体特征边界点计算
+      if (is.na(kQuantile)) {
+        stop("Please input the 'kQuantile'.")  # 没有输入kQuantile
+      } else if (is.numeric(kQuantile) & kQuantile >= 0 & kQuantile <= 1) {
+        
+        if (kOutliersType == "Dec") {
+          tmp.data <- subset(data, accZMS2 <= 0)  # 减速位置点数据
+          kAccLimit <- quantile(x = tmp.data$accZMS2,
+                                probs = kQuantile,
+                                names = FALSE)  # 加速度边界点
+          return(subset(tmp.data, accZMS2 <= kAccLimit))  # 返回Outlier点数据
+          
+        } else if (kOutliersType == "Acc") {
+          tmp.data <- subset(data, accZMS2 >= 0)  # 加速位置点数据
+          kAccLimit <- quantile(x = tmp.data$accZMS2,
+                                probs = kQuantile,
+                                names = FALSE)  # 加速度边界值
+          return(subset(tmp.data, accZMS2 >= kAccLimit))  # 返回Outlier点数据
+          
+        } else {
+          stop("Please check the input 'kOutliersType'.\
+  The 'kOutliersType' is the calculation method to be used. The default 'Dec'\
+               implies the input 'kOutliersType' is the deceleration outliers calculation.\
+               The other method is 'Acc', which means the input 'kOutliersType' is the\
+               acceleration outliers calculation.")
+        }
+        
+      } else {
+        stop("Please check the input 'data', and 'kQuantile'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'kQuantile' should be a numeric variable ranged from 0 to 1.")
+      }
+      
+      
+    } else {  # 群体同一边界点计算
+      if (is.na(kAccLimit)) {
+        stop("Please input the 'kAccLimit'.")  # 没有输入kAccLimit
+      } else if (is.numeric(kAccLimit)) {
+        
+        if (kOutliersType == "Dec") {
+          return(subset(data, accZMS2 <= kAccLimit))  # 返回Outlier点数据
+        } else if (kOutliersType == "Acc") {
+          return(subset(data, accZMS2 >= kAccLimit))  # 返回Outlier点数据
+        } else {
+          stop("Please check the input 'kOutliersType'.\
+  The 'kOutliersType' is the calculation method to be used. The default 'Dec'\
+  implies the input 'kOutliersType' is the deceleration outliers calculation.\
+  The other method is 'Acc', which means the input 'kOutliersType' is the\
+  acceleration outliers calculation.")
+        }
+        
+      } else {
+        stop("Please check the input 'data', and 'kAccLimit'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'kAccLimit' should be a numeric variable.")
+      }
+    }
+    
+    
+  } else {
+    stop("Please check the input 'is.indv'.\
+  The 'is.indv' is a logical variable. The default 'TRUE' implies every driver\
+  has his or her own acceleration or deceleration limit, while the 'FALSE' means\
+  all drivers have the same accleration or deceleration limit.")
+  }
+}
+
+
+# 批量计算加速度or减速度较大的点
+CalcBatchAccOutliers <- function(data,
+                                 kDriverID = NA,
+                                 kQuantile = NA,
+                                 kAccLimit = NA,
+                                 kOutliersType = "Dec",
+                                 is.indv = NA){
+  # 批量计算加速度or减速度较大的点。
+  #
+  # 输入：
+  # data：重命名后的数据框，经过CalcDrivingTraj计算行车轨迹。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # kQuantile：CalcAccOutliers中的kQuantile，默认为NA。
+  # kAccLimit: CalcAccOutliers中的kAccLimit，默认为NA。
+  # kOutliersType：CalcAccOutliers中的kOutliersType，默认为NA。
+  # is.indv: CalcAccOutliers中的is.indv，默认为NA。
+  #
+  # 输出：加速度or减速度较大的数据组成的数据框。
+  
+  if (is.character(kDriverID)) {
+    
+    df.accoutliers <- data.frame()  # 输出数据框
+    
+    # 依次计算各个驾驶人加速度or减速度较大的点
+    for (kIDidex in 1:length(kDriverID)) {
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidex],]
+      tmpdf.accoutliers <- CalcAccOutliers(data = tmp.df,
+                                           kQuantile = kQuantile,
+                                           kAccLimit = kAccLimit,
+                                           kOutliersType = kOutliersType,
+                                           is.indv = is.indv)
+      
+      df.accoutliers <- rbind(df.accoutliers, tmpdf.accoutliers)
+    }
+    
+    return(df.accoutliers)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+         The 'kDriverID' should be a character vector variable.")
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
