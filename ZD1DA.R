@@ -915,7 +915,7 @@ plot.zd1WOTsedanbrakepedal <- ggplot(data = df.zd1WOTsedan,
   scale_x_continuous(name = "桩号", limits = c(0, 1400),
                      breaks = c(0, 582, 802, 852),
                      labels = c("S1K0+000", "S1K0+581.612", "", "")) +
-  scale_y_continuous(name = "制动踏板位移）", limits = c(0, 1)) +
+  scale_y_continuous(name = "制动踏板位移", limits = c(0, 1)) +
   annotate(geom = "rect", xmin = 211.6, xmax = 1400,
            ymin = 0, ymax = 1, alpha = 0.2) +
   annotate(geom = "text", x = 211.6, y = 1, label = "S1匝道隧道起点") +
@@ -945,7 +945,7 @@ plot.zd1WTsedanbrakepedal <- ggplot(data = df.zd1WTsedan,
   scale_x_continuous(name = "桩号", limits = c(0, 1400),
                      breaks = c(0, 582, 802, 852),
                      labels = c("S1K0+000", "S1K0+581.612", "", "")) +
-  scale_y_continuous(name = "制动踏板位移）", limits = c(0, 1)) +
+  scale_y_continuous(name = "制动踏板位移", limits = c(0, 1)) +
   annotate(geom = "rect", xmin = 211.6, xmax = 1400,
            ymin = 0, ymax = 1, alpha = 0.2) +
   annotate(geom = "text", x = 211.6, y = 1, label = "S1匝道隧道起点") +
@@ -975,7 +975,7 @@ plot.zd1WOTtruckbrakepedal <- ggplot(data = df.zd1WOTtruck,
   scale_x_continuous(name = "桩号", limits = c(0, 1400),
                      breaks = c(0, 582, 802, 852),
                      labels = c("S1K0+000", "S1K0+581.612", "", "")) +
-  scale_y_continuous(name = "制动踏板位移）", limits = c(0, 1)) +
+  scale_y_continuous(name = "制动踏板位移", limits = c(0, 1)) +
   annotate(geom = "rect", xmin = 211.6, xmax = 1400,
            ymin = 0, ymax = 1, alpha = 0.2) +
   annotate(geom = "text", x = 211.6, y = 1, label = "S1匝道隧道起点") +
@@ -1279,19 +1279,251 @@ plot.zd1WOTtruckspotspeed <- ggplot(data = plotdf.zd1WOTtruckspotspeed,
 plot.zd1WOTtruckspotspeed
 
 
-# 8 大加速度分布分析----
-# 8.1 轿车，大加速度分布----
-# 8.1.1 轿车，大加速度，无交通流----
-# 8.1.2 轿车，大加速度，有交通流----
-# 8.2 货车，大加速度----
+# 8 开始制动位置分布----
+# 8.1 轿车，开始制动位置分布----
+# 8.1.1 轿车，开始制动位置分布，无交通流----
+# 8.1.2 轿车，开始制动位置分布，有交通流----
+# 8.2 货车，开始制动位置分布----
 
 
 
-# 9 大减速度分布分析----
-# 9.1 轿车，大减速度分布----
-# 9.1.1 轿车，大减速度，无交通流----
-# 9.1.2 轿车，大减速度，有交通流----
-# 9.2 货车，大减速度----
+# 9 开始制动位置分布----
+# 9.1 轿车，开始制动位置分布----
+# 9.1.1 轿车，开始制动位置分布，无交通流----
+# 9.1.2 轿车，开始制动位置分布，有交通流----
+# 9.2 货车，开始制动位置分布----
+
+
+
+# 10 大加速度分布分析----
+# 10.1 轿车，大加速度分布----
+# 10.1.1 轿车，大加速度，无交通流----
+# 10.1.2 轿车，大加速度，有交通流----
+# 10.2 货车，大加速度----
+
+
+
+# 11 大减速度分布分析----
+# 11.1 轿车，大减速度分布----
+# 11.1.1 轿车，大减速度，无交通流----
+# 11.1.1.1 轿车，大减速度，无交通流，个体比较----
+df.zd1wotsedandecoutlier1 <- CalcBatchAccOutliers(data = df.zd1WOTsedantraj,
+                                                  kDriverID = c("S0101", "S0201",
+                                                                "S0301", "S0401",
+                                                                "S0501", "S0601",
+                                                                "S0701", "S0801",
+                                                                "S0901", "S1002",
+                                                                "S1101", "S1201",
+                                                                "S1301", "S1401",
+                                                                "S1501", "S1601",
+                                                                "S1701", "S1801",
+                                                                "S2002"),
+                                                  kQuantile = 0.05,
+                                                  kAccLimit = NA, 
+                                                  kOutliersType = "Dec",
+                                                  is.indv = TRUE)
+
+plot.zd1wotsedandecoutlier1 <- ggplot(data = df.zd1wotsedandecoutlier1,
+                                      aes(x = disTravelled, y = drivingTraj)) +
+  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.5)+
+  # 主线车道边缘线1
+  annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
+           size = 3, colour = "black", linetype = "solid") +
+  # 主线车道边缘线2
+  annotate(geom = "segment", x = 854, xend = 1400, y = 11.45, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 主线车道车道分隔线
+  annotate(geom = "segment",
+           x = c(0, 0), xend = c(1400, 1400),
+           y = c(3.82, 7.64), yend = c(3.82, 7.64),
+           size = 1, colour = "black", linetype = "dashed") +
+  # 主线车道边缘线3&渠化线1
+  annotate(geom = "segment", x = 0, xend = 727, y = 11.45, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线1
+  annotate(geom = "segment", x = 0, xend = 582, y = 16.14, yend = 16.14,
+           size = 1, colour = "black", linetype = "solid") +
+  # 鼻端
+  annotate(geom = "segment", x = 582, xend = 582, y = 11.45, yend = 16.14,
+           size = 1, colour = "black", linetype = "solid") +
+  # 主线&匝道分隔
+  annotate(geom = "rect", xmin = 0, xmax = 582, ymin = 11.45, ymax = 16.14,
+           colour = "black") +
+  # 渠化线2
+  annotate(geom = "segment", x = 582, xend = 727, y = 16.14, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 其他渠化线
+  annotate(geom = "segment",
+           x = c(582, 582, 582), xend = c(618, 654, 690),
+           y = c(12.62, 13.79, 14.96), yend = c(11.45, 11.45, 11.45),
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道与主线车道分割线
+  annotate(geom = "segment", x = 727, xend = 854, y = 11.45, yend = 11.45,
+           size = 1, colour = "black", linetype = "dashed") +
+  # 匝道车道边缘线2
+  annotate(geom = "segment", x = 0, xend = 582, y = 23.35, yend = 23.35,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线3
+  annotate(geom = "segment", x = 582, xend = 727, y = 23.35, yend = 18.65,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线4
+  annotate(geom = "segment", x = 727, xend = 807, y = 18.65, yend = 18.65,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线5
+  annotate(geom = "segment", x = 807, xend = 854, y = 18.65, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道分隔线
+  annotate(geom = "segment",
+           x = c(0, 582, 727), xend = c(582, 727, 807),
+           y = c(19.82, 19.82, 15.05), yend = c(19.82, 15.05, 15.05),
+           size = 1, colour = "black", linetype = "dashed") +
+  # 隧道起点、加速段、渐变段位置
+  annotate(geom = "rect", xmin = 211.6, xmax = 1400,
+           ymin = 0, ymax = 23.35, alpha = 0.2) +
+  annotate(geom = "text", x = 211.6, y = 1.5,
+           fontface="bold", size = 4,
+           label = "S1匝道隧道起点") +
+  annotate(geom = "segment",
+           x = 582, xend = 802, y = 23.35, yend = 23.35, size = 1,
+           arrow = arrow(ends = "both", angle = 90, length = unit(0.2, "cm"))) +
+  annotate(geom = "text", x = c(692, 692), y = c(22, 24),
+           fontface = "bold", size = 4,
+           label = c("加速段", "220m")) +
+  annotate(geom = "segment",
+           x = 802, xend = 852, y = 23.35, yend = 23.35, size = 1,
+           arrow = arrow(ends = "both", angle = 90, length = unit(0.2, "cm"))) +
+  annotate(geom = "text", x = c(827, 827), y = c(22, 24),
+           fontface = "bold", size = 4,
+           label = c("渐变段", "50m")) +
+  # 坐标轴及图例等修改
+  scale_x_continuous(name = NULL, limits = c(0, 1400),
+                     breaks = c(0, 582, 802, 852),
+                     labels = c("S1K0+000", "S1K0+581.612", "", "")) +
+  scale_y_reverse(name = NULL, breaks = NULL, labels = NULL) +
+  theme(legend.position = "none", 
+        axis.text.x = element_text(face = "bold", size = 11, colour = "black"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(linetype = "dashed",
+                                        colour = "black", size = 0.5),
+        panel.grid.minor = element_blank())
+
+plot.zd1wotsedandecoutlier1
+
+
+# 11.1.1.2 轿车，大减速度，无交通流，群体比较----
+df.zd1wotsedandecoutlier2 <- CalcBatchAccOutliers(data = df.zd1WOTsedantraj,
+                                                  kDriverID = c("S0101", "S0201",
+                                                                "S0301", "S0401",
+                                                                "S0501", "S0601",
+                                                                "S0701", "S0801",
+                                                                "S0901", "S1002",
+                                                                "S1101", "S1201",
+                                                                "S1301", "S1401",
+                                                                "S1501", "S1601",
+                                                                "S1701", "S1801",
+                                                                "S2002"),
+                                                  kQuantile = NA,
+                                                  kAccLimit = -3.0, 
+                                                  kOutliersType = "Dec",
+                                                  is.indv = FALSE)
+
+plot.zd1wotsedandecoutlier2 <- ggplot(data = df.zd1wotsedandecoutlier2,
+                                      aes(x = disTravelled, y = drivingTraj)) +
+  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.2)+
+  # 主线车道边缘线1
+  annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
+           size = 3, colour = "black", linetype = "solid") +
+  # 主线车道边缘线2
+  annotate(geom = "segment", x = 854, xend = 1400, y = 11.45, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 主线车道车道分隔线
+  annotate(geom = "segment",
+           x = c(0, 0), xend = c(1400, 1400),
+           y = c(3.82, 7.64), yend = c(3.82, 7.64),
+           size = 1, colour = "black", linetype = "dashed") +
+  # 主线车道边缘线3&渠化线1
+  annotate(geom = "segment", x = 0, xend = 727, y = 11.45, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线1
+  annotate(geom = "segment", x = 0, xend = 582, y = 16.14, yend = 16.14,
+           size = 1, colour = "black", linetype = "solid") +
+  # 鼻端
+  annotate(geom = "segment", x = 582, xend = 582, y = 11.45, yend = 16.14,
+           size = 1, colour = "black", linetype = "solid") +
+  # 主线&匝道分隔
+  annotate(geom = "rect", xmin = 0, xmax = 582, ymin = 11.45, ymax = 16.14,
+           colour = "black") +
+  # 渠化线2
+  annotate(geom = "segment", x = 582, xend = 727, y = 16.14, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 其他渠化线
+  annotate(geom = "segment",
+           x = c(582, 582, 582), xend = c(618, 654, 690),
+           y = c(12.62, 13.79, 14.96), yend = c(11.45, 11.45, 11.45),
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道与主线车道分割线
+  annotate(geom = "segment", x = 727, xend = 854, y = 11.45, yend = 11.45,
+           size = 1, colour = "black", linetype = "dashed") +
+  # 匝道车道边缘线2
+  annotate(geom = "segment", x = 0, xend = 582, y = 23.35, yend = 23.35,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线3
+  annotate(geom = "segment", x = 582, xend = 727, y = 23.35, yend = 18.65,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线4
+  annotate(geom = "segment", x = 727, xend = 807, y = 18.65, yend = 18.65,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道边缘线5
+  annotate(geom = "segment", x = 807, xend = 854, y = 18.65, yend = 11.45,
+           size = 1, colour = "black", linetype = "solid") +
+  # 匝道车道分隔线
+  annotate(geom = "segment",
+           x = c(0, 582, 727), xend = c(582, 727, 807),
+           y = c(19.82, 19.82, 15.05), yend = c(19.82, 15.05, 15.05),
+           size = 1, colour = "black", linetype = "dashed") +
+  # 隧道起点、加速段、渐变段位置
+  annotate(geom = "rect", xmin = 211.6, xmax = 1400,
+           ymin = 0, ymax = 23.35, alpha = 0.2) +
+  annotate(geom = "text", x = 211.6, y = 1.5,
+           fontface="bold", size = 4,
+           label = "S1匝道隧道起点") +
+  annotate(geom = "segment",
+           x = 582, xend = 802, y = 23.35, yend = 23.35, size = 1,
+           arrow = arrow(ends = "both", angle = 90, length = unit(0.2, "cm"))) +
+  annotate(geom = "text", x = c(692, 692), y = c(22, 24),
+           fontface = "bold", size = 4,
+           label = c("加速段", "220m")) +
+  annotate(geom = "segment",
+           x = 802, xend = 852, y = 23.35, yend = 23.35, size = 1,
+           arrow = arrow(ends = "both", angle = 90, length = unit(0.2, "cm"))) +
+  annotate(geom = "text", x = c(827, 827), y = c(22, 24),
+           fontface = "bold", size = 4,
+           label = c("渐变段", "50m")) +
+  # 坐标轴及图例等修改
+  scale_x_continuous(name = NULL, limits = c(0, 1400),
+                     breaks = c(0, 582, 802, 852),
+                     labels = c("S1K0+000", "S1K0+581.612", "", "")) +
+  scale_y_reverse(name = NULL, breaks = NULL, labels = NULL) +
+  theme(legend.position = "none", 
+        axis.text.x = element_text(face = "bold", size = 11, colour = "black"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(linetype = "dashed",
+                                        colour = "black", size = 0.5),
+        panel.grid.minor = element_blank())
+
+plot.zd1wotsedandecoutlier2
+
+
+# 11.1.2 轿车，大减速度，有交通流----
+# 11.1.2.1 轿车，大减速度，有交通流，个体比较----
+# 11.1.2.2 轿车，大减速度，有交通流，群体比较----
+
+
+# 11.2 货车，大减速度----
+# 11.2.1 货车，大减速度，有交通流，个体比较----
+# 11.2.2 货车，大减速度，有交通流，群体比较----
+
+
 
 
 
