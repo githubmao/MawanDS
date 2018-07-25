@@ -214,7 +214,7 @@ CalcLCPoint <- function(data,
   # drivingTraj值，设定阈值，模拟车从主线进入匝道时，车道跨越位置为前一时刻该输
   # 出值小于阈值、且下一时刻该输出值大于或等于阈值的位置点（匝道进入主线反之）。
   #
-  # 输出：
+  # 输入：
   # data：重命名且经过CalcDrivingTraj函数计算的数据框。
   # kLatDis：车道跨越阈值，默认为NA。
   # is.main2ramp：主线进入匝道为 TRUE，匝道进入主线为 FALSE，默认为NA。
@@ -275,8 +275,8 @@ CalcBatchLCPoint <- function(data,
   # is.main2ramp：CalcLCPoint函数中的is.main2ramp参数值，默认为NA。
   # is.disdecrease：CalcLCPoint函数中的is.disdecrease参数值，默认为NA。
   #
-  # 输出：含车道跨越点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID的
-  #       数据框。
+  # 输出：含车道跨越点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID、行驶
+  #       速度的数据框。
   
   if (is.character(kDriverID)) {
     
@@ -476,9 +476,9 @@ CalcAccOutliers <- function(data,
         } else {
           stop("Please check the input 'kOutliersType'.\
   The 'kOutliersType' is the calculation method to be used. The default 'Dec'\
-               implies the input 'kOutliersType' is the deceleration outliers calculation.\
-               The other method is 'Acc', which means the input 'kOutliersType' is the\
-               acceleration outliers calculation.")
+  implies the input 'kOutliersType' is the deceleration outliers calculation.\
+  The other method is 'Acc', which means the input 'kOutliersType' is the\
+  acceleration outliers calculation.")
         }
         
       } else {
@@ -522,7 +522,7 @@ CalcAccOutliers <- function(data,
 }
 
 
-# 批量计算加速度or减速度较大的点
+# 批量计算加速度or减速度较大的点----
 CalcBatchAccOutliers <- function(data,
                                  kDriverID = NA,
                                  kQuantile = NA,
@@ -565,6 +565,111 @@ CalcBatchAccOutliers <- function(data,
          The 'kDriverID' should be a character vector variable.")
   }
 }
+
+
+# 计算加速位置----
+CalcAppGas <- function(data,
+                       is.disdecrease = NA,
+                       kPedalMod = NA){
+  # 计算驾驶人开始加速的数据行号，判定原则：前一时刻油门踏板为0，后一时刻油门踏
+  # 板不为0.
+  #
+  # data：重命名后的数据框。
+  # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
+  # kPedalMod：油门踏板"0"值校正值，默认为NA，建议设为0.01。
+  #
+  # 输出：加速位置的数据行号，有多个满足判定条件的位置点，输出为一组数值向量。
+  
+  if (is.na(is.disdecrease)) {
+    stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
+  } else if (is.na(kPedalMod)) {
+    stop("Please input the 'kPedalMod'.")  # 没有输入kPedalMod
+  } else if (is.logical(is.disdecrease) & is.numeric(kPedalMod)) {
+    
+    data <- data[order(data$disTravelled,
+                       decreasing = is.disdecrease),]  # 按桩号排列数据
+    
+    # 生成前一时刻的appGasPedal
+    tmp.data <- transform(data,
+                          appGasPedalB4 = c(appGasPedal[1],
+                                            appGasPedal[-length(appGasPedal)]))
+    
+    # 计算加速位置行号
+    kAppGasRowNo <- which(tmp.data$appGasPedal > kPedalMod &
+                            tmp.data$appGasPedalB4 < kPedalMod)
+    
+    return(kAppGasRowNo)
+    
+  } else {
+    stop("Please check the input 'data', 'is.disdecrease' and 'kPedalMod'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'is.disdecrease' should be a logical variable.\  
+  The 'kPedalMod' should be a numeric variable.")
+  }
+}
+
+
+# 批量计算加速位置----
+CalcBatchAppGas <- function(data,
+                            kDriverID = NA,
+                            is.disdecrease = NA,
+                            kPedalMod = NA){
+  # 依据CalcAppGas函数，批量计算加速位置。
+  #
+  # 输入：
+  # data：重命名且经过CalcDrivingTraj函数计算的数据框据。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # is.disdecrease：CalcAppGas函数中的is.disdecrease参数值，默认为NA。
+  # kPedalMod: CalcAppGas函数中kPedalMod的参数值，默认为NA。
+  #
+  # 输出：含加速位置点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID的
+  #       数据框。
+  
+  if (is.character(kDriverID)) {
+    
+    df.appgas <- data.frame()  # 输出数据框
+    
+    for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的加速位置
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidx],]
+      kAppGasPoint <- CalcAppGas(data = tmp.df,
+                                 is.disdecrease = is.disdecrease,
+                                 kPedalMod = kPedalMod)
+      
+      tmpdf.appgas <- data.frame(rowNo = kAppGasPoint,
+                                  disTravelled = tmp.df$disTravelled[kAppGasPoint],
+                                  drivingTraj = tmp.df$drivingTraj[kAppGasPoint],
+                                  driverID = tmp.df$driverID[kAppGasPoint],
+                                  appGasPedal = tmp.df$appGasPedal[kAppGasPoint])
+      
+      df.appgas <- rbind(df.appgas, tmpdf.appgas)
+    }
+    
+    return(df.appgas)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+  The 'kDriverID' should be a character vector variable.")
+  }
+}
+
+
+# 计算减速位置----
+CalcAppBrake <- function(data,
+                         is.disdecrease = NA,
+                         kPedalMo = NA,
+                         kCalcBrakeType = "Pedal"){
+  
+  
+  
+}
+
+
+
+
+
+
+
 
 
 
