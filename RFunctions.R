@@ -622,8 +622,8 @@ CalcBatchAppGas <- function(data,
   # is.disdecrease：CalcAppGas函数中的is.disdecrease参数值，默认为NA。
   # kPedalMod: CalcAppGas函数中kPedalMod的参数值，默认为NA。
   #
-  # 输出：含加速位置点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID的
-  #       数据框。
+  # 输出：含加速位置点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID、油门
+  # 踏板输入值的数据框。
   
   if (is.character(kDriverID)) {
     
@@ -657,20 +657,114 @@ CalcBatchAppGas <- function(data,
 # 计算减速位置----
 CalcAppBrake <- function(data,
                          is.disdecrease = NA,
-                         kPedalMo = NA,
-                         kCalcBrakeType = "Pedal"){
+                         kPedalMod = NA,
+                         kCalcBrakeType = "BrakePedal"){
+  # 计算驾驶人开始减速的数据行号，判定原则：（1）前一时刻油门踏板为0，后一时刻油
+  # 门踏板不为0；（2）以刹车灯点亮为判定原则。
+  #
+  # data：重命名后的数据框。
+  # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
+  # kPedalMod：油门踏板"0"值校正值，默认为NA，建议设为0.01。
+  # kCalcBrakeType: 计算方法，"BrakePedal"模式用油门踏板输入量计算，适用于判定原
+  #            则（1）；"BrakeLight"模式用刹车灯输入量计算，适用于判定原则（2）.
+  #
+  # 输出：减速位置的数据行号，有多个满足判定条件的位置点，输出为一组数值向量。
   
-  
-  
+  if (is.na(is.disdecrease)) {
+    stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
+  } else if (is.na(kCalcBrakeType)) {
+    stop("Please input the 'kCalcBrakeType'.")  # 没有输入kCalcBrakeType
+  } else if (kCalcBrakeType == "BrakePedal" & is.na(kPedalMod)) {
+    stop("Please input the 'kPedalMod'.")  # 没有输入kPedalMod
+  } else if (is.logical(is.disdecrease) & is.numeric(kPedalMod) &
+             is.character(kCalcBrakeType)) {
+    
+    data <- data[order(data$disTravelled,
+                       decreasing = is.disdecrease),]  # 按桩号排列数据
+    
+    if (kCalcBrakeType == "BrakePedal") {  # 选用appBrake计算减速位置
+      # 生成前一时刻的appBrake
+      tmp.data <- transform(data,
+                            appBrakeB4 = c(appBrake[1],
+                                           appBrake[-length(appBrake)]))
+      # 计算减速位置行号
+      kAppBrakeRowNo <- which(tmp.data$appBrake > kPedalMod &
+                                tmp.data$appBrakeB4 < kPedalMod)
+      
+    } else if (kCalcBrakeType == "BrakeLight") {  # 选用lightState计算减速位置
+      tmp.data <- transform(data,
+                            lightStateB4 = c(lightState[1],
+                                             lightState[-length(lightState)]))
+      # 计算减速位置行号
+      kAppBrakeRowNo <- which(grepl(pattern = "BrakeLight",
+                                    x = tmp.data$lightState) &
+                                !grepl(pattern = "BrakeLight",
+                                       x = tmp.data$lightStateB4))
+    } else {
+      stop("Please check the input 'kCalcBrakeType'.\
+    The 'kCalcBrakeType' is the calculation method to be used. The default value\
+    'BrakePedal' implies the 'appBrake' variable will be used in the\
+    calculation, while the other method is 'BrakeLight', which means the\
+    'lightState' variable will be used in the calculation.")
+    }
+    
+    return(kAppBrakeRowNo)
+    
+  } else {
+    stop("Please check the input 'data', 'is.disdecrease' and 'kPedalMod'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'is.disdecrease' should be a logical variable.\  
+  The 'kPedalMod' should be a numeric variable.")
+  }
 }
 
 
-
-
-
-
-
-
+# 批量计算减速位置----
+CalcBatchAppBrake <- function(data,
+                              kDriverID = NA,
+                              is.disdecrease = NA,
+                              kPedalMod = NA,
+                              kCalcBrakeType = NA){
+  # 依据CalcAppBrake函数，批量计算加速位置。
+  #
+  # 输入：
+  # data：重命名且经过CalcDrivingTraj函数计算的数据框据。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # is.disdecrease：CalcAppBrake函数中的is.disdecrease参数值，默认为NA。
+  # kPedalMod: CalcAppBrake函数中kPedalMod的参数值，默认为NA。
+  # kCalcBrakeType: CalcAppBrake函数中kCalcBrakeType的参数值，默认为NA。
+  #
+  # 输出：含减速位置点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID、减速
+  # 踏板输入值的数据框。
+  
+  if (is.character(kDriverID)) {
+    
+    df.appbrake <- data.frame()  # 输出数据框
+    
+    for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的减速位置
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidx],]
+      kAppBrakePoint <- CalcAppBrake(data = tmp.df,
+                                     is.disdecrease = is.disdecrease,
+                                     kPedalMod = kPedalMod,
+                                     kCalcBrakeType = kCalcBrakeType)
+      
+      tmpdf.appbrake <- data.frame(rowNo = kAppBrakePoint,
+                                   disTravelled = tmp.df$disTravelled[kAppBrakePoint],
+                                   drivingTraj = tmp.df$drivingTraj[kAppBrakePoint],
+                                   driverID = tmp.df$driverID[kAppBrakePoint],
+                                   appBrake = tmp.df$appBrake[kAppBrakePoint])
+      
+      df.appbrake <- rbind(df.appbrake, tmpdf.appbrake)
+    }
+    
+    return(df.appbrake)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+         The 'kDriverID' should be a character vector variable.")
+  }
+}
 
 
 
