@@ -1411,8 +1411,8 @@ plot.zd1WOTtruckspotspeed <- ggplot(data = plotdf.zd1WOTtruckspotspeed,
   scale_x_discrete(limits = c("accSTRT", "accEnd/transSTRT",
                               "LCPoint1", "transEnd", "LCPoint2"),
                    labels = c("加速段起点", "加速段终点\n(渐变段起点)",
-                              "匝道->主线最外侧车道\n换道位置", "渐变段终点",
-                              "主线最外侧车道->主线中间车道\n换道位置")) +
+                              "匝道->主线外侧车道\n换道位置", "渐变段终点",
+                              "主线外侧车道->\n主线中间车道\n换道位置")) +
   scale_y_continuous(name = "速度（km/h）", limits = c(0, 100)) +
   theme(axis.text.x = element_text(face = "bold", size = 10),
         axis.text.y = element_text(face = "bold", size = 10),
@@ -1442,29 +1442,29 @@ df.zd1WOTsedanappbrake <- CalcBatchAppBrake(data = df.zd1WOTsedantraj,
 
 plot.zd1WOTsedanappbrake <- ggplot(data = df.zd1WOTsedanappbrake,
                                    aes(x = disTravelled, y = drivingTraj)) +
-  geom_point(aes(colour = factor(driverID)), size = 3) +
+  geom_point(aes(colour = factor(driverID), size = appBrake)) +
   # 主线车道边缘线1
-  annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
+  annotate(geom = "segment", x = 10, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
   # 主线车道边缘线2
   annotate(geom = "segment", x = 854, xend = 1400, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "solid") +
   # 主线车道车道分隔线
   annotate(geom = "segment",
-           x = c(0, 0), xend = c(1400, 1400),
+           x = c(10, 10), xend = c(1400, 1400),
            y = c(3.82, 7.64), yend = c(3.82, 7.64),
            size = 1, colour = "black", linetype = "dashed") +
   # 主线车道边缘线3&渠化线1
-  annotate(geom = "segment", x = 0, xend = 727, y = 11.45, yend = 11.45,
+  annotate(geom = "segment", x = 10, xend = 727, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道边缘线1
-  annotate(geom = "segment", x = 0, xend = 582, y = 16.14, yend = 16.14,
+  annotate(geom = "segment", x = 10, xend = 582, y = 16.14, yend = 16.14,
            size = 1, colour = "black", linetype = "solid") +
   # 鼻端
   annotate(geom = "segment", x = 582, xend = 582, y = 11.45, yend = 16.14,
            size = 1, colour = "black", linetype = "solid") +
   # 主线&匝道分隔
-  annotate(geom = "rect", xmin = 0, xmax = 582, ymin = 11.45, ymax = 16.14,
+  annotate(geom = "rect", xmin = 10, xmax = 582, ymin = 11.45, ymax = 16.14,
            colour = "black") +
   # 渠化线2
   annotate(geom = "segment", x = 582, xend = 727, y = 16.14, yend = 11.45,
@@ -1478,7 +1478,7 @@ plot.zd1WOTsedanappbrake <- ggplot(data = df.zd1WOTsedanappbrake,
   annotate(geom = "segment", x = 727, xend = 854, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "dashed") +
   # 匝道车道边缘线2
-  annotate(geom = "segment", x = 0, xend = 582, y = 23.35, yend = 23.35,
+  annotate(geom = "segment", x = 10, xend = 582, y = 23.35, yend = 23.35,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道边缘线3
   annotate(geom = "segment", x = 582, xend = 727, y = 23.35, yend = 18.65,
@@ -1491,7 +1491,7 @@ plot.zd1WOTsedanappbrake <- ggplot(data = df.zd1WOTsedanappbrake,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道分隔线
   annotate(geom = "segment",
-           x = c(0, 582, 727), xend = c(582, 727, 807),
+           x = c(10, 582, 727), xend = c(582, 727, 807),
            y = c(19.82, 19.82, 15.05), yend = c(19.82, 15.05, 15.05),
            size = 1, colour = "black", linetype = "dashed") +
   # 隧道起点、加速段、渐变段位置
@@ -1513,9 +1513,9 @@ plot.zd1WOTsedanappbrake <- ggplot(data = df.zd1WOTsedanappbrake,
            fontface = "bold", size = 4,
            label = c("渐变段", "50m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = NULL, limits = c(0, 1400),
-                     breaks = c(0, 582, 802, 852),
-                     labels = c("S1K0+000", "S1K0+581.612", "", "")) +
+  scale_x_continuous(name = NULL, limits = c(10, 1400),
+                     breaks = c(10, 582, 802, 852),
+                     labels = c("S1K0+010", "S1K0+581.612", "", "")) +
   scale_y_reverse(name = NULL, breaks = NULL, labels = NULL) +
   theme(legend.position = "none", 
         axis.text.x = element_text(face = "bold", size = 11, colour = "black"),
@@ -1544,29 +1544,29 @@ df.zd1WTsedanappbrake <- CalcBatchAppBrake(data = df.zd1WTsedantraj,
 
 plot.zd1WTsedanappbrake <- ggplot(data = df.zd1WTsedanappbrake,
                                   aes(x = disTravelled, y = drivingTraj)) +
-  geom_point(aes(colour = factor(driverID)), size = 3) +
+  geom_point(aes(colour = factor(driverID), size = appBrake)) +
   # 主线车道边缘线1
-  annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
+  annotate(geom = "segment", x = 10, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
   # 主线车道边缘线2
   annotate(geom = "segment", x = 854, xend = 1400, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "solid") +
   # 主线车道车道分隔线
   annotate(geom = "segment",
-           x = c(0, 0), xend = c(1400, 1400),
+           x = c(10, 10), xend = c(1400, 1400),
            y = c(3.82, 7.64), yend = c(3.82, 7.64),
            size = 1, colour = "black", linetype = "dashed") +
   # 主线车道边缘线3&渠化线1
-  annotate(geom = "segment", x = 0, xend = 727, y = 11.45, yend = 11.45,
+  annotate(geom = "segment", x = 10, xend = 727, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道边缘线1
-  annotate(geom = "segment", x = 0, xend = 582, y = 16.14, yend = 16.14,
+  annotate(geom = "segment", x = 10, xend = 582, y = 16.14, yend = 16.14,
            size = 1, colour = "black", linetype = "solid") +
   # 鼻端
   annotate(geom = "segment", x = 582, xend = 582, y = 11.45, yend = 16.14,
            size = 1, colour = "black", linetype = "solid") +
   # 主线&匝道分隔
-  annotate(geom = "rect", xmin = 0, xmax = 582, ymin = 11.45, ymax = 16.14,
+  annotate(geom = "rect", xmin = 10, xmax = 582, ymin = 11.45, ymax = 16.14,
            colour = "black") +
   # 渠化线2
   annotate(geom = "segment", x = 582, xend = 727, y = 16.14, yend = 11.45,
@@ -1580,7 +1580,7 @@ plot.zd1WTsedanappbrake <- ggplot(data = df.zd1WTsedanappbrake,
   annotate(geom = "segment", x = 727, xend = 854, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "dashed") +
   # 匝道车道边缘线2
-  annotate(geom = "segment", x = 0, xend = 582, y = 23.35, yend = 23.35,
+  annotate(geom = "segment", x = 10, xend = 582, y = 23.35, yend = 23.35,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道边缘线3
   annotate(geom = "segment", x = 582, xend = 727, y = 23.35, yend = 18.65,
@@ -1593,7 +1593,7 @@ plot.zd1WTsedanappbrake <- ggplot(data = df.zd1WTsedanappbrake,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道分隔线
   annotate(geom = "segment",
-           x = c(0, 582, 727), xend = c(582, 727, 807),
+           x = c(10, 582, 727), xend = c(582, 727, 807),
            y = c(19.82, 19.82, 15.05), yend = c(19.82, 15.05, 15.05),
            size = 1, colour = "black", linetype = "dashed") +
   # 隧道起点、加速段、渐变段位置
@@ -1615,9 +1615,9 @@ plot.zd1WTsedanappbrake <- ggplot(data = df.zd1WTsedanappbrake,
            fontface = "bold", size = 4,
            label = c("渐变段", "50m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = NULL, limits = c(0, 1400),
-                     breaks = c(0, 582, 802, 852),
-                     labels = c("S1K0+000", "S1K0+581.612", "", "")) +
+  scale_x_continuous(name = NULL, limits = c(10, 1400),
+                     breaks = c(10, 582, 802, 852),
+                     labels = c("S1K0+010", "S1K0+581.612", "", "")) +
   scale_y_reverse(name = NULL, breaks = NULL, labels = NULL) +
   theme(legend.position = "none", 
         axis.text.x = element_text(face = "bold", size = 11, colour = "black"),
@@ -1641,29 +1641,29 @@ df.zd1WOTtruckappbrake <- CalcBatchAppBrake(data = df.zd1WOTtrucktraj,
 
 plot.zd1WOTtruckappbrake <- ggplot(data = df.zd1WOTtruckappbrake,
                                    aes(x = disTravelled, y = drivingTraj)) +
-  geom_point(aes(colour = factor(driverID)), size = 3) +
+  geom_point(aes(colour = factor(driverID), size = appBrake)) +
   # 主线车道边缘线1
-  annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
+  annotate(geom = "segment", x = 10, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
   # 主线车道边缘线2
   annotate(geom = "segment", x = 854, xend = 1400, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "solid") +
   # 主线车道车道分隔线
   annotate(geom = "segment",
-           x = c(0, 0), xend = c(1400, 1400),
+           x = c(10, 10), xend = c(1400, 1400),
            y = c(3.82, 7.64), yend = c(3.82, 7.64),
            size = 1, colour = "black", linetype = "dashed") +
   # 主线车道边缘线3&渠化线1
-  annotate(geom = "segment", x = 0, xend = 727, y = 11.45, yend = 11.45,
+  annotate(geom = "segment", x = 10, xend = 727, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道边缘线1
-  annotate(geom = "segment", x = 0, xend = 582, y = 16.14, yend = 16.14,
+  annotate(geom = "segment", x = 10, xend = 582, y = 16.14, yend = 16.14,
            size = 1, colour = "black", linetype = "solid") +
   # 鼻端
   annotate(geom = "segment", x = 582, xend = 582, y = 11.45, yend = 16.14,
            size = 1, colour = "black", linetype = "solid") +
   # 主线&匝道分隔
-  annotate(geom = "rect", xmin = 0, xmax = 582, ymin = 11.45, ymax = 16.14,
+  annotate(geom = "rect", xmin = 10, xmax = 582, ymin = 11.45, ymax = 16.14,
            colour = "black") +
   # 渠化线2
   annotate(geom = "segment", x = 582, xend = 727, y = 16.14, yend = 11.45,
@@ -1677,7 +1677,7 @@ plot.zd1WOTtruckappbrake <- ggplot(data = df.zd1WOTtruckappbrake,
   annotate(geom = "segment", x = 727, xend = 854, y = 11.45, yend = 11.45,
            size = 1, colour = "black", linetype = "dashed") +
   # 匝道车道边缘线2
-  annotate(geom = "segment", x = 0, xend = 582, y = 23.35, yend = 23.35,
+  annotate(geom = "segment", x = 10, xend = 582, y = 23.35, yend = 23.35,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道边缘线3
   annotate(geom = "segment", x = 582, xend = 727, y = 23.35, yend = 18.65,
@@ -1690,7 +1690,7 @@ plot.zd1WOTtruckappbrake <- ggplot(data = df.zd1WOTtruckappbrake,
            size = 1, colour = "black", linetype = "solid") +
   # 匝道车道分隔线
   annotate(geom = "segment",
-           x = c(0, 582, 727), xend = c(582, 727, 807),
+           x = c(10, 582, 727), xend = c(582, 727, 807),
            y = c(19.82, 19.82, 15.05), yend = c(19.82, 15.05, 15.05),
            size = 1, colour = "black", linetype = "dashed") +
   # 隧道起点、加速段、渐变段位置
@@ -1712,9 +1712,9 @@ plot.zd1WOTtruckappbrake <- ggplot(data = df.zd1WOTtruckappbrake,
            fontface = "bold", size = 4,
            label = c("渐变段", "50m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = NULL, limits = c(0, 1400),
-                     breaks = c(0, 582, 802, 852),
-                     labels = c("S1K0+000", "S1K0+581.612", "", "")) +
+  scale_x_continuous(name = NULL, limits = c(10, 1400),
+                     breaks = c(10, 582, 802, 852),
+                     labels = c("S1K0+010", "S1K0+581.612", "", "")) +
   scale_y_reverse(name = NULL, breaks = NULL, labels = NULL) +
   theme(legend.position = "none", 
         axis.text.x = element_text(face = "bold", size = 11, colour = "black"),
@@ -2049,7 +2049,7 @@ df.zd1WOTsedandecoutlier1 <- CalcBatchAccOutliers(data = df.zd1WOTsedantraj,
 
 plot.zd1WOTsedandecoutlier1 <- ggplot(data = df.zd1WOTsedandecoutlier1,
                                       aes(x = disTravelled, y = drivingTraj)) +
-  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.5)+
+  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.2)+
   # 主线车道边缘线1
   annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
@@ -2257,7 +2257,7 @@ df.zd1WTsedandecoutlier1 <- CalcBatchAccOutliers(data = df.zd1WTsedantraj,
 
 plot.zd1WTsedandecoutlier1 <- ggplot(data = df.zd1WTsedandecoutlier1,
                                      aes(x = disTravelled, y = drivingTraj)) +
-  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.5)+
+  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.2)+
   # 主线车道边缘线1
   annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
@@ -2459,7 +2459,7 @@ df.zd1WOTtruckdecoutlier1 <- CalcBatchAccOutliers(data = df.zd1WOTtrucktraj,
 
 plot.zd1WOTtruckdecoutlier1 <- ggplot(data = df.zd1WOTtruckdecoutlier1,
                                       aes(x = disTravelled, y = drivingTraj)) +
-  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.5)+
+  geom_point(aes(colour = factor(driverID), size = accZMS2), alpha = 0.2)+
   # 主线车道边缘线1
   annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
