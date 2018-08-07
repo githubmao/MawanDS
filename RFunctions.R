@@ -272,6 +272,7 @@ CalcBatchLCPoint <- function(data,
   # 输入：
   # data：重命名且经过CalcDrivingTraj函数计算的数据框据。
   # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # kLatDis: CalcLCPoint函数中的kLatDis参数值，默认为NA。
   # is.main2ramp：CalcLCPoint函数中的is.main2ramp参数值，默认为NA。
   # is.disdecrease：CalcLCPoint函数中的is.disdecrease参数值，默认为NA。
   #
