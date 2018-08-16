@@ -1464,7 +1464,7 @@ plot.zd2truckappbrake <- ggplot(data = df.zd2truckappbrake,
 plot.zd2truckappbrake
 
 
-# 开始加速位置分布----
+# 9 开始加速位置分布----
 # 9.1 轿车，开始加速位置分布----
 df.zd2sedanappgas <- CalcBatchAppGas(data = df.zd2sedantraj,
                                      kDriverID = c("S0101", "S0201",
