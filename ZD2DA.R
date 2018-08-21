@@ -465,18 +465,18 @@ plot.zd2trucktraj2
 # 3 匝道2，车道跨越点分析----
 # 3.1 轿车，车道跨越点分析----
 df.zd2sedanLCpoints <- CalcBatchLCPoint(data = df.zd2sedantraj,
-                                           kDriverID = c("S0101", "S0201",
-                                                         "S0301", "S0401",
-                                                         "S0501", "S0601",
-                                                         "S0701", "S0801",
-                                                         "S0901", "S1001",
-                                                         "S1201", "S1301",
-                                                         "S1501", "S1601",
-                                                         "S1701", "S1901",
-                                                         "S2001"),
-                                           kLatDis = 11.45,
-                                           is.main2ramp = TRUE,
-                                           is.disdecrease = FALSE)
+                                        kDriverID = c("S0101", "S0201",
+                                                      "S0301", "S0401",
+                                                      "S0501", "S0601",
+                                                      "S0701", "S0801",
+                                                      "S0901", "S1001",
+                                                      "S1201", "S1301",
+                                                      "S1501", "S1601",
+                                                      "S1701", "S1901",
+                                                      "S2001"),
+                                        kLatDis = 11.45,
+                                        is.main2ramp = TRUE,
+                                        is.disdecrease = FALSE)
 df.zd2sedanLCpoints <- df.zd2sedanLCpoints[-18,]  # 特殊处理
 median(df.zd2sedanLCpoints$disTravelled)
 plot.zd2sedanLCpoints <- ggplot(data = df.zd2sedanLCpoints,
