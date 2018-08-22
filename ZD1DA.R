@@ -144,7 +144,7 @@ df.zd1WOTsedantraj <- CalcBatchTraj(data = df.zd1WOTsedan,
 plot.zd1WOTsedantraj <- ggplot(data = df.zd1WOTsedantraj,
                                aes(x = disTravelled, y = drivingTraj)) +
   geom_line(aes(colour = factor(driverID)), size = 1) +
-    # 主线车道边缘线1
+  # 主线车道边缘线1
   annotate(geom = "segment", x = 0, xend = 1400, y = 0, yend = 0,
            size = 3, colour = "black", linetype = "solid") +
   # 主线车道边缘线2
@@ -945,7 +945,7 @@ plot.zd1WOTtruckLCpoints2
 # 4.1.1 轿车，加速度，无交通流----
 plot.zd1WOTsedanacc <- ggplot(data = df.zd1WOTsedan,
                               aes(x = disTravelled, y = accZMS2)) +
-  geom_point(aes(colour = factor(driverID)), size =1) +
+  geom_point(aes(colour = factor(driverID)), size = 1) +
   geom_hline(yintercept = c(-2, 2), colour = "orange",
              linetype = "dashed", size = 1) +
   geom_hline(yintercept = c(-3, 3), colour = "red",
@@ -1141,7 +1141,7 @@ plot.zd1WOTsedangaspedal <- ggplot(data = df.zd1WOTsedan,
   scale_x_continuous(name = "桩号", limits = c(0, 1400),
                      breaks = c(0, 582, 802, 852),
                      labels = c("S1K0+000", "S1K0+581.612", "", "")) +
-  scale_y_continuous(name = "油门踏板位移）", limits = c(0, 1)) +
+  scale_y_continuous(name = "油门踏板位移", limits = c(0, 1)) +
   annotate(geom = "rect", xmin = 211.6, xmax = 1400,
            ymin = 0, ymax = 1, alpha = 0.2) +
   annotate(geom = "text", x = 211.6, y = 1, label = "S1匝道隧道起点") +
@@ -1171,7 +1171,7 @@ plot.zd1WTsedangaspedal <- ggplot(data = df.zd1WTsedan,
   scale_x_continuous(name = "桩号", limits = c(0, 1400),
                      breaks = c(0, 582, 802, 852),
                      labels = c("S1K0+000", "S1K0+581.612", "", "")) +
-  scale_y_continuous(name = "油门踏板位移）", limits = c(0, 1)) +
+  scale_y_continuous(name = "油门踏板位移", limits = c(0, 1)) +
   annotate(geom = "rect", xmin = 211.6, xmax = 1400,
            ymin = 0, ymax = 1, alpha = 0.2) +
   annotate(geom = "text", x = 211.6, y = 1, label = "S1匝道隧道起点") +
@@ -1201,7 +1201,7 @@ plot.zd1WOTtruckgaspedal <- ggplot(data = df.zd1WOTtruck,
   scale_x_continuous(name = "桩号", limits = c(0, 1400),
                      breaks = c(0, 582, 802, 852),
                      labels = c("S1K0+000", "S1K0+581.612", "", "")) +
-  scale_y_continuous(name = "油门踏板位移）", limits = c(0, 1)) +
+  scale_y_continuous(name = "油门踏板位移", limits = c(0, 1)) +
   annotate(geom = "rect", xmin = 211.6, xmax = 1400,
            ymin = 0, ymax = 1, alpha = 0.2) +
   annotate(geom = "text", x = 211.6, y = 1, label = "S1匝道隧道起点") +
