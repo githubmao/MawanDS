@@ -138,7 +138,7 @@ plot.zd5traj1 <- ggplot(data = df.zd5traj,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(0, 3100),
+  scale_x_continuous(name = NULL, limits = c(0, 3100),
                      breaks = c(500, 1500, 2556, 2636, 2776, 3100),
                      labels = c("RK2+330", "RK3+330", "", "",
                                 "S2K0+142.248", "S5K0+466")) +
@@ -227,7 +227,7 @@ plot.zd5traj2 <- ggplot(data = df.zd5traj,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(2000, 3100),
+  scale_x_continuous(name = NULL, limits = c(2000, 3100),
                      breaks = c(2556, 2636, 2776, 3100),
                      labels = c("", "",
                                 "S2K0+142.248", "S5K0+466")) +
@@ -359,7 +359,7 @@ plot.zd5LCpoints <- ggplot(data = df.zd5LCpoints,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(2300, 3100),
+  scale_x_continuous(name = NULL, limits = c(2300, 3100),
                      breaks = c(2556, 2636, 2776, 3100),
                      labels = c("", "",
                                 "S2K0+142.248", "S5K0+466")) +
@@ -602,7 +602,7 @@ plot.zd5appbrake <- ggplot(data = df.zd5appbrake,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(0, 3100),
+  scale_x_continuous(name = NULL, limits = c(0, 3100),
                      breaks = c(500, 1500, 2556, 2636, 2776, 3100),
                      labels = c("RK2+330", "RK3+330", "", "",
                                 "S2K0+142.248", "S5K0+466")) +
@@ -702,7 +702,7 @@ plot.zd5appgas <- ggplot(data = df.zd5appgas,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(0, 3100),
+  scale_x_continuous(name = NULL, limits = c(0, 3100),
                      breaks = c(500, 1500, 2556, 2636, 2776, 3100),
                      labels = c("RK2+330", "RK3+330", "", "",
                                 "S2K0+142.248", "S5K0+466")) +
@@ -808,7 +808,7 @@ plot.zd5decoutlier1 <- ggplot(data = df.zd5decoutlier1,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(0, 3100),
+  scale_x_continuous(name = NULL, limits = c(0, 3100),
                      breaks = c(500, 1500, 2556, 2636, 2776, 3100),
                      labels = c("RK2+330", "RK3+330", "", "",
                                 "S2K0+142.248", "S5K0+466")) +
@@ -913,7 +913,7 @@ plot.zd5decoutlier2 <- ggplot(data = df.zd5decoutlier2,
            fontface = "bold", size = 4,
            label = c("减速段", "142.65m")) +
   # 坐标轴及图例等修改
-  scale_x_continuous(name = "桩号", limits = c(0, 3100),
+  scale_x_continuous(name = NULL, limits = c(0, 3100),
                      breaks = c(500, 1500, 2556, 2636, 2776, 3100),
                      labels = c("RK2+330", "RK3+330", "", "",
                                 "S2K0+142.248", "S5K0+466")) +
