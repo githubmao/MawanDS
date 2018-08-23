@@ -1332,7 +1332,7 @@ plot.zd1WTsedanspotspeed
 # 7.1.3 轿车，关键位置速度，无交通流 vs 有交通流----
 # 特征点速度统计量计算，WOT vs WT
 df.zd1sedanspotspeed <- rbind(df.zd1WOTsedanspotspeed,
-                                df.zd1WTsedanspotspeed)
+                              df.zd1WTsedanspotspeed)
 
 plotdf.zd1sedanspotspeed <- ddply(df.zd1sedanspotspeed,
                                   .(disTag, scenType),
