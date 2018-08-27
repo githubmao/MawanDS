@@ -768,20 +768,179 @@ CalcBatchAppBrake <- function(data,
 }
 
 
+# 计算换道位置，by车道号----
+CalcLnNumChg <- function(data,
+                         kLnNumB4 = NA,
+                         kLnNumNxt = NA,
+                         is.disdecrease = NA){
+  # 计算车道跨越点的数据行行号，车道跨越判定原则：laneNumber变化，建议优先使用
+  #  CalcLCPoint函数。
+  #
+  # 输入：
+  # data：重命名的数据框。
+  # kLnNumB4：前一个位置的车道号，默认为NA。
+  # kLnNumNxt：当前位置的车道号，默认为NA。
+  # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
+  #
+  # 输出：车道跨越点的位置行号，有多个满足判定条件的位置点（即反复换道时），输出
+  #       为一组数值向量。
+  if (is.na(kLnNumB4)) {
+    stop("Please input the 'kLnNumB4'.")  # 没有输入kLnNumB4
+  } else if (is.na(kLnNumNxt)) {
+    stop("Please input the 'kLnNumNxt'.")  # 没有输入kLnNumNxt
+  } else if (is.na(is.disdecrease)) {
+    stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
+  } else if (is.character(kLnNumB4) & is.character(kLnNumNxt) &
+             is.logical(is.disdecrease)) {
+    
+    data <- data[order(data$disTravelled,
+                       decreasing = is.disdecrease),]  # 按桩号排列数据
+    
+    # 生成前一个时刻的laneNumber
+    tmp.data <- transform(data,
+                          laneNumberB4 = c(laneNumber[1],
+                                           laneNumber[-length(laneNumber)]))
+    
+    # 计算车道跨越位置行号
+    kLnNumChgRowNo <- which(tmp.data$laneNumber == kLnNumNxt &
+                              tmp.data$laneNumberB4 == kLnNumB4)
+    
+    return(kLnNumChgRowNo)
+  } else {
+    stop("Please check the input 'data', 'kLnNumB4', 'kLnNumNxt'\
+  and 'is.disdecrease'.\
+  The 'data' should be a Rioh 8dof driving simulator data.\
+  The 'kLnNumB4' should be a character variable.\
+  The 'kLnNumNxt' should be a character variable.\
+  The 'is.disdecrease' should be a logical variable.")
+  }
+}
 
 
+# 批量计算换道位置，by车道号----
+CalcBatchLnNumChg <- function(data,
+                              kDriverID = NA,
+                              kLnNumB4 = NA,
+                              kLnNumNxt = NA,
+                              is.disdecrease = NA){
+  
+  if (is.character(kDriverID)) {
+    
+    df.LCpoints <- data.frame()  # 输出数据框
+    
+    for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的LC Point
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidx],]
+      kLCPoint <- CalcLnNumChg(data = tmp.df,
+                               kLnNumB4 = kLnNumB4,
+                               kLnNumNxt = kLnNumNxt,
+                               is.disdecrease = is.disdecrease)
+      
+      tmpdf.LCpoint <- data.frame(rowNo = kLCPoint,
+                                  disTravelled = tmp.df$disTravelled[kLCPoint],
+                                  drivingTraj = tmp.df$drivingTraj[kLCPoint],
+                                  driverID = tmp.df$driverID[kLCPoint],
+                                  speedKMH = tmp.df$speedKMH[kLCPoint])
+      
+      df.LCpoints <- rbind(df.LCpoints, tmpdf.LCpoint)
+    }
+    
+    return(df.LCpoints)
+    
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+  The 'kDriverID' should be a character vector variable.")
+  }
+}
 
 
+# 计算换道位置，by disToRIghtBorder----
+CalcLCRtBrdr <- function(data,
+                         kRtBrdr = NA,
+                         is.disdecrease = NA){
+  # 计算车道跨越点的数据行行号，车道跨越判定原则：依据DisToRightBorder输出值，
+  # 设定阈值，模拟车从主线进入匝道时，车道跨越位置为前一时刻该输出值大于阈值、
+  # 且下一时刻该输出值小于或等于阈值的位置点（匝道进入主线反之）。
+  #
+  # 输入：
+  # data：重命名且经过CalcDrivingTraj函数计算的数据框。
+  # kRtBrdr：车道跨越阈值，默认为NA。
+  # is.disdecrease：data中的disTraveled变量是否为递减趋势，默认为NA。
+  #
+  # 输出：车道跨越点的位置行号，有多个满足判定条件的位置点（即反复换道时），输出
+  #       为一组数值向量。
+  
+  if (is.na(kRtBrdr)) {
+    stop("Please input the 'kRtBrdr'.")  # 没有输入kLatDis
+  } else if (is.na(is.disdecrease)) {
+    stop("Please input the 'is.disdecrease'.")  # 没有输入is.disdecrease
+  } else if (is.numeric(kRtBrdr) & is.logical(is.disdecrease)) {
+    
+    data <- data[order(data$disTravelled,
+                       decreasing = is.disdecrease),]  # 按桩号排列数据
+    
+    # 生成前一时刻的disToRightBorder
+    tmp.data <- transform(data,
+                          kRtBrdrB4 = c(disToRightBorder[1],
+                                        disToRightBorder[-length(disToRightBorder)]))
+    
+    kLCRowNo <- which(tmp.data$disToRightBorder <= kRtBrdr &
+                        tmp.data$kRtBrdrB4 > kRtBrdr)
+    
+    return(kLCRowNo)
+  } else {
+    stop("Please check the input 'data', 'kRtBrdr', and 'is.disdecrease'.\
+         The 'data' should be a Rioh 8dof driving simulator data.\
+         The 'kRtBrdr' should be a numeric variable.\
+         The 'is.disdecrease' should be a logical variable.")
+  }
+}
 
 
-
-
-
-
-
-
-
-
+# 批量计算车道跨越点----
+CalcBatchLCRtBrdr <- function(data,
+                              kDriverID = NA,
+                              kRtBrdr = NA,
+                              is.disdecrease = NA){
+  # 依据CalcLCRtBrdr函数，批量计算车道跨越点。
+  #
+  # 输入：
+  # data：重命名且经过CalcDrivingTraj函数计算的数据框据。
+  # kDriverID：需要计算的驾驶人ID向量集，默认为NA。
+  # kRtBrdr: CalcLCRtBrdr函数中的kRtBrdr参数值，默认为NA。
+  # is.disdecrease：CalcLCRtBrdr函数中的is.disdecrease参数值，默认为NA。
+  #
+  # 输出：含车道跨越点行号、桩号、驾驶轨迹（即距离道路左侧距离）、驾驶人ID、行驶
+  #       速度的数据框。
+  
+  if (is.character(kDriverID)) {
+    
+    df.LCpoints <- data.frame()  # 输出数据框
+    
+    for (kIDidx in 1:length(kDriverID)) {  # 依次计算各个驾驶人的LC Point
+      
+      tmp.df <- data[data$driverID == kDriverID[kIDidx],]
+      kLCPoint <- CalcLCRtBrdr(data = tmp.df,
+                               kRtBrdr = kRtBrdr,
+                               is.disdecrease = is.disdecrease)
+      
+      tmpdf.LCpoint <- data.frame(rowNo = kLCPoint,
+                                  disTravelled = tmp.df$disTravelled[kLCPoint],
+                                  drivingTraj = tmp.df$drivingTraj[kLCPoint],
+                                  driverID = tmp.df$driverID[kLCPoint],
+                                  speedKMH = tmp.df$speedKMH[kLCPoint])
+      
+      df.LCpoints <- rbind(df.LCpoints, tmpdf.LCpoint)
+    }
+    
+    return(df.LCpoints)
+    
+  } else {
+    stop("Please check the input 'kDriverID'.\
+  The 'kDriverID' should be a character vector variable.")
+  }
+}
 
 
 
