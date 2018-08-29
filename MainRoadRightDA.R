@@ -452,6 +452,9 @@ df.MRWOTsedanLCpoint <- CalcBatchLCPoint(data = df.MRWOTsedantraj,
                                          is.main2ramp = FALSE,
                                          is.disdecrease = FALSE)
 
+df.MRWOTsedanLCpoint <- subset(df.MRWOTsedanLCpoint,
+                               disTravelled >= 6800)
+
 plot.MRWOTsedanLCpoint <- ggplot(data = df.MRWOTsedanLCpoint,
                                  aes(x = disTravelled, y = drivingTraj)) +
   geom_jitter(shape = 21, fill = "white", size = 2, stroke = 2) +
@@ -462,7 +465,7 @@ plot.MRWOTsedanLCpoint <- ggplot(data = df.MRWOTsedanLCpoint,
   annotate(geom = "text", x = median(df.MRWOTsedanLCpoint$disTravelled) + 450,
            y = 4 - 2,
            fontface = "bold", colour = "red", size = 4,
-           label = c("换道位置中位值 RK6+228")) +
+           label = c("换道位置中位值 RK6+235")) +
   annotate(geom = "segment",
            x = median(df.MRWOTsedanLCpoint$disTravelled),
            xend = median(df.MRWOTsedanLCpoint$disTravelled) + 80,
