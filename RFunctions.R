@@ -898,7 +898,7 @@ CalcLCRtBrdr <- function(data,
 }
 
 
-# 批量计算车道跨越点----
+# 批量计算车道跨越点，by disToRIghtBorder----
 CalcBatchLCRtBrdr <- function(data,
                               kDriverID = NA,
                               kRtBrdr = NA,
